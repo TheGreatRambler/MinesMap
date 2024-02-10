@@ -33,11 +33,11 @@ export default function Home() {
 
     // scene
     var scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0xff0000 );
+    scene.background = new THREE.Color( 0xffffff );
 
     // camera
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.y = 5
+    camera.position.y = 5;
     camera.rotation.x = -75;
 
     // renderer
@@ -54,34 +54,25 @@ export default function Home() {
     }
     controls.minDistance = 2.5;
     controls.maxDistance = 10;
-
     
-    // // axis guide
+    // axis guide
     const axesHelper = new THREE.AxesHelper( 5 );
     scene.add( axesHelper );
     
     // map
     const loader = new GLTFLoader();
-    loader.load('model/example.gltf', function(gltf) {
-      gltf.scene.scale.set(10,10,10);
-      gltf.scene.position.z = -10;
-      gltf.scene.position.x = 5;
-      scene.add(gltf.scene);
+    loader.load('model/floor2.glb', function(glb) {
+      glb.scene.scale.set(10,10,10);
+      glb.scene.position.z = -10;
+      glb.scene.position.x = 5;
+      scene.add(glb.scene);
+      console.log(glb.scene);
     }, undefined, function (error) {console.error(error);});
 
     // light
     const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
     scene.add( directionalLight );
 
-    // var animate = function () {
-    //   delta += clock.getDelta();
-    //   if (delta > interval) {
-    //     requestAnimationFrame(animate);
-    //     renderer.render(scene, camera);
-    //     controls.update();
-    //     delta = delta % interval;
-    //   }
-    // };
     // animate();
     var animate = function () {
       requestAnimationFrame(animate);

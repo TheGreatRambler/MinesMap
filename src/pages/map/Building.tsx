@@ -38,5 +38,15 @@ export class Building {
     }
   }
 
+  leave(){
+    for (let i = 0; i < this.floors.length; i++){
+      this.floors[i].hide();
+    }
+  }
+
+  enter(){
+    this.showFloor(this.defaultFloor);
+  }
+
   
 }

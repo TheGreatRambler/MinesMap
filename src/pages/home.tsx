@@ -8,7 +8,6 @@ import { CanvasTexture, SpriteMaterial, Sprite } from 'three';
 
 
 import { Building } from './map/Building';
-import { Floor } from './map/Floor';
 
 export interface HomeProps {
   inheritSize: boolean;
@@ -17,12 +16,23 @@ export interface HomeProps {
 export default function Home(props: HomeProps) {
   const [inBuilding, setInBuilding] = createSignal(true);
   const [currFloor, setCurrFloor] = createSignal(0);
+  const [cameraY, setCameraY] = createSignal(5);
 
-
-  var building = new Building("McNeil", "MC", 0, ['model/floor1.glb', 'model/floor2.glb']);
+  var building = new Building("McNeil", "MC", 0, [
+    '../assets/model/floor1.glb',
+    '../assets/model/floor2.glb'
+  ]);
 
   const toggleBuilding = () => {
-    setInBuilding(!inBuilding());
+    if (inBuilding()){
+      // building.leave();
+      setCameraY(5);
+      setInBuilding(false);
+    } else {
+      // building.enter();
+      setCameraY(2);
+      setInBuilding(true);
+    }
   }
 
   const toggleFloor = () => {
@@ -38,7 +48,7 @@ export default function Home(props: HomeProps) {
 
     // camera
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.y = 5;
+    camera.position.y = cameraY();
     camera.rotation.x = -90;
 
     // renderer
@@ -58,7 +68,7 @@ export default function Home(props: HomeProps) {
       RIGHT: THREE.MOUSE.ROTATE//null
     }
     controls.maxDistance = 1.5;
-    controls.minDistance = 0.5;
+    controls.minDistance = 0.75;
     camera.zoom = controls.maxDistance;
     
     // axis guide
@@ -106,6 +116,12 @@ export default function Home(props: HomeProps) {
           then = now - (delta % interval);
   
           // ... Code for Drawing the Frame ...
+          if (camera.y < cameraY()){
+            camera.y += 0.1;
+          } else if (camera.y > cameraY()){
+            camera.y -= 0.1;
+          }
+          console.log(camera.y);
           renderer.render(scene, camera);
           controls.update();
       }

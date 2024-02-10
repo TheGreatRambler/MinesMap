@@ -49,10 +49,10 @@ export class Building {
     this.currFloor = newFloor;
     for (let i = 0; i < this.floors.length; i++){
       if (i <= newFloor){
-        console.log("showing floor " + i);
+        // console.log("showing floor " + i);
         this.floors[i].show();
       } else {
-        console.log("hiding floor " + i);
+        // console.log("hiding floor " + i);
         this.floors[i].hide();
       }
     }
@@ -68,5 +68,4 @@ export class Building {
     this.showFloor(this.defaultFloor);
   }
 
-  
 }

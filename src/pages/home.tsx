@@ -13,8 +13,12 @@ export interface HomeProps {
 }
 
 export default function Home(props: HomeProps) {
-  const [inBuilding, setInBuilding] = createSignal(true);
-  const [cameraY, setCameraY] = createSignal(5);
+  const [inBuilding, setInBuilding] = createSignal(false);
+
+  // animation stuff
+  var minCameraY = 5;
+  var maxCameraY = 8;
+  var targetCameraY = null;
 
   var building = new Building("McNeil", "MC", 0, [
     '/model/floor1.glb',
@@ -25,11 +29,10 @@ export default function Home(props: HomeProps) {
   const toggleBuilding = () => {
     if (inBuilding()){
       building.leave();
-      setCameraY(5);
       setInBuilding(false);
+
     } else {
       building.enter();
-      setCameraY(2);
       setInBuilding(true);
     }
   }
@@ -42,7 +45,7 @@ export default function Home(props: HomeProps) {
 
     // camera
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.y = cameraY();
+    camera.position.y = 5;
     camera.rotation.x = -90;
 
     // renderer
@@ -111,12 +114,13 @@ export default function Home(props: HomeProps) {
           then = now - (delta % interval);
   
           // ... Code for Drawing the Frame ...
-          if (camera.y < cameraY()){
-            camera.y += 0.1;
-          } else if (camera.y > cameraY()){
-            camera.y -= 0.1;
-          }
-          // console.log(camera.y);
+          // if (camera.position.y < y-0.1){
+          //   camera.position.y = Math.min(camera.position.y+0.3, y);
+          // } else if (camera.position.y > y+0.1){
+          //   camera.position.y = Math.max(camera.position.y-0.3, y);
+          // }
+
+          // console.log(camera.position.y, cameraY());
           renderer.render(scene, camera);
       }
     };

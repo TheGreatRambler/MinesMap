@@ -23,11 +23,8 @@ export class Floor {
         object.position.z = -1;
         scene.add(object);
         thisReference.model = object;
-        console.log(object);
-        console.log(glb.scene)
         for (const child of glb.scene.children) {
-          // Ignore children whose name entirely consists of
-          // numbers
+          // Ignore children whose name entirely consists of numbers
           if (child.name.endsWith('mesh')) {
             continue;
           }
@@ -58,7 +55,6 @@ export class Floor {
     const model = await this.model;
     if (model){
       model.visible = false;
-      console.log(model);
       for (const room of this.rooms){
         room.hide();
       }

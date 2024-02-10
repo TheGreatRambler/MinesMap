@@ -18,9 +18,9 @@ export default function Home(props: HomeProps) {
   // animation stuff
   var minCameraY = 5;
   var maxCameraY = 8;
-  var targetCameraY = null;
+  var targetCameraY = 8;
 
-  var building = new Building("McNeil", "MC", 0, [
+  var building = new Building("McNeil", "MC", 1, [
     '/model/floor1.glb',
     '/model/floor2.glb'
   ]);
@@ -28,13 +28,17 @@ export default function Home(props: HomeProps) {
 
   const toggleBuilding = () => {
     if (inBuilding()){
-      building.leave();
+      // building.leave();
       setInBuilding(false);
-
+      minCameraY = 5;
+      maxCameraY = 8;
     } else {
       building.enter();
       setInBuilding(true);
+      minCameraY = 0.5;
+      maxCameraY = 1.5;
     }
+    targetCameraY = maxCameraY;
   }
 
   let mapContainer: HTMLDivElement;
@@ -114,11 +118,16 @@ export default function Home(props: HomeProps) {
           then = now - (delta % interval);
   
           // ... Code for Drawing the Frame ...
-          // if (camera.position.y < y-0.1){
-          //   camera.position.y = Math.min(camera.position.y+0.3, y);
-          // } else if (camera.position.y > y+0.1){
-          //   camera.position.y = Math.max(camera.position.y-0.3, y);
-          // }
+          if (targetCameraY){
+            if (camera.position.y < targetCameraY){
+              camera.position.y = Math.min(camera.position.y+0.3, targetCameraY);
+            } else if (camera.position.y > targetCameraY){
+              camera.position.y = Math.max(camera.position.y-0.3, targetCameraY);
+            }
+            if (Math.abs(camera.position.y - targetCameraY) < 0.1) targetCameraY = null;
+          }
+          controls.maxDistance = maxCameraY;
+          controls.minDistance = minCameraY;
 
           // console.log(camera.position.y, cameraY());
           renderer.render(scene, camera);

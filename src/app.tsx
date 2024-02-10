@@ -5,6 +5,7 @@ import { onMount, createSignal } from 'solid-js';
 import { routes } from '../routes';
 
 import rainy from './assets/rainy.svg';
+import Home from './pages/home';
 
 const getTime = () => {
   const date = new Date();
@@ -49,7 +50,9 @@ const App: Component = () => {
                 <div class="row-span-2 rounded-[32px] flex items-center">
                   <p class="text-5xl m-0 font-open-sans font-bold">Map</p>
                 </div>
-                <div class="row-span-16 bg-gray-300 h-full rounded-[32px]"></div>
+                <div class="row-span-16 bg-gray-300 h-full rounded-[32px] overflow-hidden">
+                  <Home />
+                </div>
             </div>
 
             <div class="col-span-1 grid grid-rows-12 gap-4">

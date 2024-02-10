@@ -19,7 +19,7 @@ export default function Home() {
     camera.rotation.x = -75;
 
     var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(mapContainer.clientWidth, mapContainer.clientHeight);
     mapContainer.appendChild(renderer.domElement);
 
     var controls = new MapControls(camera, renderer.domElement);
@@ -52,9 +52,7 @@ export default function Home() {
   }, []);
   return (
 
-    <section class="p-0">
-      <div ref={mapContainer}></div>
-    </section>
+      <div class="h-full w-full" ref={mapContainer}></div>
 
   );
 }

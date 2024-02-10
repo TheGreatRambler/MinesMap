@@ -17,18 +17,18 @@ export default function Home(props: HomeProps) {
   const [cameraY, setCameraY] = createSignal(5);
 
   var building = new Building("McNeil", "MC", 0, [
-    '../assets/model/floor1.glb',
-    '../assets/model/floor2.glb'
+    '/model/floor1.glb',
+    '/model/floor2.glb'
   ]);
   const [currFloor, setCurrFloor] = createSignal(building.currFloor);
 
   const toggleBuilding = () => {
     if (inBuilding()){
-      // building.leave();
+      building.leave();
       setCameraY(5);
       setInBuilding(false);
     } else {
-      // building.enter();
+      building.enter();
       setCameraY(2);
       setInBuilding(true);
     }
@@ -116,9 +116,8 @@ export default function Home(props: HomeProps) {
           } else if (camera.y > cameraY()){
             camera.y -= 0.1;
           }
-          console.log(camera.y);
+          // console.log(camera.y);
           renderer.render(scene, camera);
-          controls.update();
       }
     };
     animate();

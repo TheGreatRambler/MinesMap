@@ -24,15 +24,35 @@ export class Building {
     for (let i = 0; i < this.floors.length; i++){
       this.floors[i].load(gltfloader, scene);
     }
-    this.showFloor(this.currFloor);
+    
+    this.showFloor(1);
+    return this;
+  }
+
+  up() {
+    if (this.currFloor + 1 >= this.floors.length){
+      return this;
+    }
+    this.showFloor(this.currFloor + 1);
+    return this;
+  }
+
+  down() {
+    if (this.currFloor - 1 < 0){
+      return this;
+    }
+    this.showFloor(this.currFloor - 1);
+    return this;
   }
 
   showFloor(newFloor){
     this.currFloor = newFloor;
     for (let i = 0; i < this.floors.length; i++){
-      if (i == newFloor){
+      if (i <= newFloor){
+        console.log("showing floor " + i);
         this.floors[i].show();
       } else {
+        console.log("hiding floor " + i);
         this.floors[i].hide();
       }
     }

@@ -52,6 +52,7 @@ export class Room {
 
       // Create a sprite with the material
       const sprite = new Sprite(spriteMaterial);
+      // Default size is too big for a label, scale it down
       sprite.scale.set(0.125 / 2, 0.125 / 4, 1);
       sprite.position.set(this.x, this.y, this.z);
 

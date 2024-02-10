@@ -1,13 +1,12 @@
 import { createSignal, createEffect, } from 'solid-js';
 import * as THREE from 'three';
-import { FontLoader } from 'three/addons/loaders/FontLoader.js';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import fontSize from '../assets/helvetiker_regular.typeface.json';
-import { CanvasTexture, SpriteMaterial, Sprite } from 'three';
 
 
 import { Building } from './map/Building';
+
+import upArrow from '../assets/arrow_upward.svg';
+import downArrow from '../assets/arrow_down.svg';
 
 export interface HomeProps {
   inheritSize: boolean;
@@ -15,13 +14,13 @@ export interface HomeProps {
 
 export default function Home(props: HomeProps) {
   const [inBuilding, setInBuilding] = createSignal(true);
-  const [currFloor, setCurrFloor] = createSignal(0);
   const [cameraY, setCameraY] = createSignal(5);
 
   var building = new Building("McNeil", "MC", 0, [
     '../assets/model/floor1.glb',
     '../assets/model/floor2.glb'
   ]);
+  const [currFloor, setCurrFloor] = createSignal(building.currFloor);
 
   const toggleBuilding = () => {
     if (inBuilding()){
@@ -33,11 +32,6 @@ export default function Home(props: HomeProps) {
       setCameraY(2);
       setInBuilding(true);
     }
-  }
-
-  const toggleFloor = () => {
-    setCurrFloor(1-currFloor());
-    building.showFloor(currFloor());
   }
 
   let mapContainer: HTMLDivElement;
@@ -84,6 +78,7 @@ export default function Home(props: HomeProps) {
     
     // load building
     building.load(scene);
+    setCurrFloor(building.currFloor);
 
     // light
     const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
@@ -134,7 +129,23 @@ export default function Home(props: HomeProps) {
         <div class="h-full w-full" ref={mapContainer} />
         <div class="absolute top-0 left-0">
           <button onClick={toggleBuilding}>building</button>
-          <button onClick={toggleFloor}>floor</button>
+          <div class="flex flex-col items-center m-4 justify-center bg-grey-300">
+            <button class="mb-4 w-16 h-16 bg-gray-300 rounded-full flex justify-center items-center"            onClick={() => setCurrFloor((floor) => {
+              building.up();
+              return floor + 1;
+            })}>
+              <img src={upArrow} alt="go up" class="w-8 h-8" />
+            </button>
+            <p class="mb-4 text-black text-4xl font-open-sans">{currFloor()}</p>
+            <button class="w-16 h-16 rounded-full bg-gray-300 flex justify-center items-center" 
+            onClick={() => setCurrFloor((floor) => {
+              building.down();
+              return floor - 1;
+            })}>
+              <img src={downArrow} alt="go down" class="w-8 h-8"  />
+            </button>
+          </div>
+
         </div>
       </div>
   );

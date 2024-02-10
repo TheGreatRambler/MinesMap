@@ -20,10 +20,10 @@ export class Building {
     for (let i = 0; i < this.floors.length; i++){
       this.floors[i].load(gltfloader, scene);
     }
-    this.moveToFloor(this.currFloor);
+    this.showFloor(this.currFloor);
   }
 
-  moveToFloor(newFloor){
+  showFloor(newFloor){
     this.currFloor = newFloor;
     for (let i = 0; i < this.floors.length; i++){
       if (i == newFloor){

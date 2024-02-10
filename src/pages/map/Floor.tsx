@@ -19,6 +19,7 @@ export class Floor {
       object.position.x = 5;
       scene.add(object);
       thisReference.model = object;
+      console.log(object);
     }, undefined, function (error) {console.error(error);});
   }
 

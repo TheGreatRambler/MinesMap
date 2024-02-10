@@ -18,10 +18,13 @@ export default function Home(props: HomeProps) {
     new Floor('model/floor2.glb')
   ]);
 
+  const toggleBuilding = () => {
+    setInBuilding(!inBuilding());
+  }
 
   const toggleFloor = () => {
     setCurrFloor(1-currFloor());
-    building.moveToFloor(currFloor());
+    building.showFloor(currFloor());
   }
 
   let mapContainer: HTMLDivElement;
@@ -34,7 +37,7 @@ export default function Home(props: HomeProps) {
     // camera
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.y = 5;
-    camera.rotation.x = -75;
+    camera.rotation.x = -90;
 
     // renderer
     var renderer = new THREE.WebGLRenderer();
@@ -50,7 +53,7 @@ export default function Home(props: HomeProps) {
     controls.mouseButtons = {
       LEFT: THREE.MOUSE.PAN,
       MIDDLE: THREE.MOUSE.DOLLY,
-      RIGHT: null
+      RIGHT: null//THREE.MOUSE.ROTATE
     }
     controls.minDistance = 2.5;
     controls.maxDistance = 10;
@@ -60,10 +63,10 @@ export default function Home(props: HomeProps) {
     scene.add( axesHelper );
 
     // ground
-    const geometry = new THREE.PlaneGeometry( 1, 1 );
-    const material = new THREE.MeshBasicMaterial( {color: 0x95ff7a, side: THREE.DoubleSide} );
-    const plane = new THREE.Mesh( geometry, material );
-    plane.rotateX(Math.PI/2);
+    const planeGeo = new THREE.PlaneGeometry(1000, 1000);
+    const planeMat = new THREE.MeshBasicMaterial( {color: 0x95ff7a} );
+    const plane = new THREE.Mesh( planeGeo, planeMat );
+    plane.rotateX(-Math.PI/2);
     scene.add(plane);
     
     // load building
@@ -84,7 +87,10 @@ export default function Home(props: HomeProps) {
   }, []);
   return (
       <div>
-        <button onClick={toggleFloor}>hello</button>
+        <div>
+          <button onClick={toggleBuilding}>building</button>
+          <button onClick={toggleFloor}>floor</button>
+        </div>
         <div class="h-full w-full" ref={mapContainer} />
       </div>
   );

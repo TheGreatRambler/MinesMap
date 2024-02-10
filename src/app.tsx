@@ -6,6 +6,9 @@ import { routes } from '../routes';
 
 import rainy from './assets/rainy.svg';
 import Home from './pages/home';
+import WeatherIcon from './status/WeatherIcon';
+import WeatherDisplay from './status/WeatherDisplay';
+import TimeDisplay from './status/TimeDisplay';
 
 const getTime = () => {
   const date = new Date();
@@ -39,13 +42,8 @@ const App: Component = () => {
                   <div class="col-span-4 bg-gray-300 h-full rounded-[32px] flex items-center justify-center">
                     <img class="h-20" src="https://brand.mines.edu/wp-content/uploads/sites/425/2023/03/Mines-Logo-150-05.png" />
                   </div>
-                  <div class="col-span-4 bg-gray-300 h-full rounded-[32px] flex items-center justify-center">
-                  <p class="text-5xl m-0 font-oswald font-bold animate-fadeIn duration-500">{time()}</p>
-                  </div>
-                  <div class="col-span-4 bg-gray-300 h-full rounded-[32px] flex items-center justify-center">
-                    <img class="col-span-1 h-20 me-6" src={rainy} alt="rainy" />
-                    <p class="col-span-1 text-5xl m-0 font-oswald font-bold">20°</p>
-                  </div>
+                  <TimeDisplay class="col-span-4 h-full" />
+                  <WeatherDisplay class="h-full col-span-4" weatherCode={113} temperature={13} />
                 </div>
                 <div class="row-span-2 rounded-[32px] flex items-center">
                   <p class="text-5xl m-0 font-open-sans font-bold">Map</p>

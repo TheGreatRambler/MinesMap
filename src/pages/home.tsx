@@ -1,5 +1,8 @@
 import { createSignal, createEffect, } from 'solid-js';
 import * as THREE from 'three';
+// import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+// import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { MapControls } from 'three/examples/jsm/controls/MapControls.js';
 
 export default function Home() {
   const [count, setCount] = createSignal(0);
@@ -9,23 +12,33 @@ export default function Home() {
     // === THREE.JS CODE START ===
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.y = 5
+    camera.rotation.x = -90;
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    scene.background = new THREE.Color( 0xff0000 );
+
     // document.body.appendChild( renderer.domElement );
     // use ref as a mount point of the Three.js scene instead of the document.body
+
+    var controls = new MapControls(camera, mapContainer);
+
+    // cube
     mapContainer.appendChild(renderer.domElement);
     var geometry = new THREE.BoxGeometry(1, 1, 1);
     var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     var cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
-    camera.position.z = 5;
+    
     var animate = function () {
       requestAnimationFrame(animate);
       cube.rotation.x += 0.01;
       cube.rotation.y += 0.01;
       renderer.render(scene, camera);
+      controls.update();
     };
     animate();
+
   }, []);
   return (
 

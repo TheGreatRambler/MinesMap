@@ -19,6 +19,7 @@ export default function Home(props: HomeProps) {
   var minCameraY = 5;
   var maxCameraY = 8;
   var targetCameraY = 8;
+  const ANIMATION_SPEED = 0.3;
 
   var building = new Building("McNeil", "MC", 1, [
     '/model/floor1.glb',
@@ -36,7 +37,7 @@ export default function Home(props: HomeProps) {
       building.enter();
       setInBuilding(true);
       minCameraY = 0.5;
-      maxCameraY = 1.5;
+      maxCameraY = 1.2;
     }
     targetCameraY = maxCameraY;
   }
@@ -117,19 +118,20 @@ export default function Home(props: HomeProps) {
           // to keep the delay constant overtime and so 1sec = 10 frames
           then = now - (delta % interval);
   
-          // ... Code for Drawing the Frame ...
+          // animation stuff
           if (targetCameraY){
             if (camera.position.y < targetCameraY){
-              camera.position.y = Math.min(camera.position.y+0.3, targetCameraY);
+              camera.position.y = Math.min(camera.position.y+ANIMATION_SPEED, targetCameraY);
             } else if (camera.position.y > targetCameraY){
-              camera.position.y = Math.max(camera.position.y-0.3, targetCameraY);
+              camera.position.y = Math.max(camera.position.y-ANIMATION_SPEED, targetCameraY);
             }
-            if (Math.abs(camera.position.y - targetCameraY) < 0.1) targetCameraY = null;
+            if (Math.abs(camera.position.y - targetCameraY) < 0.01) targetCameraY = null;
           }
           controls.maxDistance = maxCameraY;
           controls.minDistance = minCameraY;
-
-          // console.log(camera.position.y, cameraY());
+          
+          // ... Code for Drawing the Frame ...
+          // console.log(camera.position);
           renderer.render(scene, camera);
       }
     };

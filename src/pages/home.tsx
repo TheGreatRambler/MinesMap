@@ -1,6 +1,11 @@
 import { createSignal, createEffect, } from 'solid-js';
 import * as THREE from 'three';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import fontSize from '../assets/helvetiker_regular.typeface.json';
+import { CanvasTexture, SpriteMaterial, Sprite } from 'three';
+
 
 import { Building } from './map/Building';
 import { Floor } from './map/Floor';
@@ -30,7 +35,6 @@ export default function Home(props: HomeProps) {
 
   let mapContainer: HTMLDivElement;
   createEffect(() => {
-
     // scene
     var scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xffffff );
@@ -75,7 +79,7 @@ export default function Home(props: HomeProps) {
     building.load(scene);
 
     // light
-    const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
     scene.add( directionalLight );
 
     // animate();

@@ -1,5 +1,5 @@
 // WeatherDisplay.tsx
-import { Component, createSignal } from 'solid-js';
+import { Component, createSignal, onMount } from 'solid-js';
 import { createQuery } from '@tanstack/solid-query';
 import WeatherIcon from './WeatherIcon';
 import { fetchWeatherData, WeatherResponse } from '../wttrin/wttrin';

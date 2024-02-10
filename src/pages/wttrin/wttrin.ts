@@ -1,34 +1,35 @@
-interface WeatherResponse {
+export interface WeatherResponse {
   current_condition: CurrentCondition[];
   weather: DailyWeather[];
 }
 
-interface CurrentCondition {
+export interface CurrentCondition {
   temp_C: string;
   temp_F: string;
   weatherCode: string;
   weatherDesc: WeatherDescription[];
 }
 
-interface DailyWeather {
+export interface DailyWeather {
   avgtempC: string;
   avgtempF: string;
   date: string;
   hourly: HourlyForecast[];
 }
 
-interface HourlyForecast {
+export interface HourlyForecast {
   tempC: string;
   tempF: string;
   weatherCode: string;
   weatherDesc: WeatherDescription[];
 }
 
-interface WeatherDescription {
+export interface WeatherDescription {
   value: string;
 }
 
-async function fetchWeatherData(): Promise<WeatherResponse> {
+export async function fetchWeatherData(): Promise<WeatherResponse> {
+  console.log('Fetching weather data...');
   try {
     const response = await fetch('http://wttr.in/Golden?format=j1');
     if (!response.ok) {

@@ -3,7 +3,7 @@ import * as THREE from 'three';
 // import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 // import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { MapControls } from 'three/examples/jsm/controls/MapControls.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export default function Home() {
   // const [count, setCount] = createSignal(0);
@@ -22,9 +22,14 @@ export default function Home() {
     renderer.setSize(mapContainer.clientWidth, mapContainer.clientHeight);
     mapContainer.appendChild(renderer.domElement);
 
-    var controls = new MapControls(camera, renderer.domElement);
-    controls.enableRotation = false;
-    controls.zoomToCursor = true;
+    var controls = new OrbitControls(camera, renderer.domElement);
+    controls.mouseButtons = {
+      LEFT: THREE.MOUSE.PAN,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT: null
+    }
+    controls.minDistance = 2.5;
+    controls.maxDistance = 10;
 
     const axesHelper = new THREE.AxesHelper( 5 );
     scene.add( axesHelper );

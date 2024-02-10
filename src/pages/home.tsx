@@ -45,7 +45,7 @@ export default function Home(props: HomeProps) {
     if (props.inheritSize) {
       renderer.setSize(mapContainer.clientWidth, mapContainer.clientHeight);
     } else {
-      renderer.setSize(1000, 1000);
+      renderer.setSize(document.body.clientWidth, document.body.clientHeight);
     }
     mapContainer.appendChild(renderer.domElement);
 
@@ -54,7 +54,7 @@ export default function Home(props: HomeProps) {
     controls.mouseButtons = {
       LEFT: THREE.MOUSE.PAN,
       MIDDLE: THREE.MOUSE.DOLLY,
-      RIGHT: THREE.MOUSE.ROTATE
+      RIGHT: THREE.MOUSE.ROTATE//null
     }
     controls.maxDistance = 1.5;
     controls.minDistance = 0.5;
@@ -78,12 +78,6 @@ export default function Home(props: HomeProps) {
     const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
     scene.add( directionalLight );
 
-    const geometry = new THREE.SphereGeometry(0.01, 32, 16);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const sphere = new THREE.Mesh(geometry, material);
-    sphere.position.set(-1.3978030681610107,0.07625014334917068,-0.028978897258639336);
-    scene.add(sphere);
-
     // animate();
     var animate = function () {
       requestAnimationFrame(animate);
@@ -95,11 +89,11 @@ export default function Home(props: HomeProps) {
   }, []);
   return (
       <div>
-        <div>
+        <div class="h-full w-full" ref={mapContainer} />
+        <div class="absolute top-0 left-0">
           <button onClick={toggleBuilding}>building</button>
           <button onClick={toggleFloor}>floor</button>
         </div>
-        <div class="h-full w-full" ref={mapContainer} />
       </div>
   );
 }

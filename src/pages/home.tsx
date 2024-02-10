@@ -8,6 +8,9 @@ import { Building } from './map/Building';
 import upArrow from '../assets/arrow_upward.svg';
 import downArrow from '../assets/arrow_down.svg';
 
+import upArrow from '../assets/arrow_upward.svg';
+import downArrow from '../assets/arrow_down.svg';
+
 export interface HomeProps {
   inheritSize: boolean;
 }

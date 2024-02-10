@@ -21,7 +21,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 //   }
 // }
 
-export default function Home() {
+export interface HomeProps {
+  inheritSize: boolean;
+}
+
+export default function Home(props: HomeProps) {
   const [currFloor, setCurrFloor] = createSignal(0);
 
   const toggleFloor = () => {
@@ -42,7 +46,11 @@ export default function Home() {
 
     // renderer
     var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(document.body.clientWidth, document.body.clientHeight);
+    if (props.inheritSize) {
+      renderer.setSize(mapContainer.clientWidth, mapContainer.clientHeight);
+    } else {
+      renderer.setSize(1000, 1000);
+    }
     mapContainer.appendChild(renderer.domElement);
 
     // controls
@@ -83,10 +91,6 @@ export default function Home() {
 
   }, []);
   return (
-    <div class="h-full w-full">
-      <div ref={mapContainer}>
-
-      </div>
-    </div>
+      <div class="h-full w-full" ref={mapContainer} />
   );
 }

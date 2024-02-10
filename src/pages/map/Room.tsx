@@ -1,4 +1,4 @@
-import { CanvasTexture, SpriteMaterial, Sprite } from 'three';
+import { CanvasTexture, SpriteMaterial, Sprite, Box3 } from 'three';
 import { Building } from './Building';
 
 export class Room {
@@ -59,6 +59,8 @@ export class Room {
       // Shfit positions to align with the rest of the building
       sprite.position.x += 0.5;
       sprite.position.z -= 1;
+
+      sprite.room = this;
 
       this.sprite = sprite;
 

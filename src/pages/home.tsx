@@ -45,6 +45,8 @@ export default function Home(props: HomeProps) {
     targetCameraY = maxCameraY;
   }
 
+  let [setup, setSetup] = createSignal(false);
+
   let mapContainer: HTMLDivElement;
   createEffect(() => {
     // scene
@@ -55,6 +57,32 @@ export default function Home(props: HomeProps) {
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.y = 5;
     camera.rotation.x = -90;
+
+    let raycaster = new THREE.Raycaster();
+    let mouse = new THREE.Vector2();
+
+    if (!setup()) {
+      window.addEventListener('click', onDocumentMouseClick, false);
+      
+      function onDocumentMouseClick(event) {
+        event.preventDefault();
+      
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+      
+        raycaster.setFromCamera(mouse, camera); // assuming you have a camera object
+      
+        let intersects = raycaster.intersectObjects(scene.children, true); // assuming you have a scene object
+      
+        for (let i = 0; i < intersects.length; i++) {
+          if (intersects[i].object instanceof THREE.Sprite) {
+            console.log('Sprite clicked!' + JSON.stringify(intersects[i].object.room.name));
+            // Here you can add what should happen on click
+          }
+        }
+      }
+      setSetup(true);
+    }
 
     // renderer
     var renderer = new THREE.WebGLRenderer();

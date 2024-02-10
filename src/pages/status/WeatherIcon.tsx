@@ -1,16 +1,16 @@
-import React from 'react';
-import cloudySnowing from "../assets/cloudy_snowing.svg";
-import foggy from "../assets/foggy.svg";
-import mist from "../assets/mist.svg";
-import partlyCloudy from "../assets/partly_cloudy_day.svg";
-import rainyHeavy from "../assets/rainy_heavy.svg";
-import rainyLight from "../assets/rainy_light.svg";
-import snowy from "../assets/snowing.svg";
-import sunny from "../assets/sunny.svg";
-import thunderstorm from "../assets/thunderstorm.svg";
-import weatherHail from "../assets/weather_hail.svg";
-import weatherSnowy from "../assets/weather_snowy.svg";
-import cloudy from "../assets/cloud.svg";
+// import React from 'react';
+import cloudySnowing from "../../assets/cloudy_snowing.svg";
+import foggy from "../../assets/foggy.svg";
+import mist from "../../assets/mist.svg";
+import partlyCloudy from "../../assets/partly_cloudy_day.svg";
+import rainyHeavy from "../../assets/rainy_heavy.svg";
+import rainyLight from "../../assets/rainy_light.svg";
+import snowy from "../../assets/snowing.svg";
+import sunny from "../../assets/sunny.svg";
+import thunderstorm from "../../assets/thunderstorm.svg";
+import weatherHail from "../../assets/weather_hail.svg";
+import weatherSnowy from "../../assets/weather_snowy.svg";
+import cloudy from "../../assets/cloud.svg";
 
 const weatherIconMapping = {
   395: cloudySnowing,

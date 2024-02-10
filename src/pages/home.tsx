@@ -33,7 +33,7 @@ export default function Home() {
 
     // scene
     var scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0xffffff );
+    scene.background = new THREE.Color( 0xff0000 );
 
     // camera
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -42,7 +42,7 @@ export default function Home() {
 
     // renderer
     var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(mapContainer.clientWidth, mapContainer.clientHeight);
+    renderer.setSize(1000, 1000);
     mapContainer.appendChild(renderer.domElement);
 
     // controls
@@ -60,7 +60,34 @@ export default function Home() {
     let delta = 0;
     let interval = 1 / 30; // 30 fps
     
-    // axis guide
+    // // axis guide
+    // const axesHelper = new THREE.AxesHelper( 5 );
+    // scene.add( axesHelper );
+
+    // // map
+    // const loader = new GLTFLoader();
+    // loader.load('model/example.gltf', function(gltf) {
+    //   gltf.scene.scale.set(10,10,10);
+    //   gltf.scene.position.z = -10;
+    //   gltf.scene.position.x = 5;
+    //   scene.add(gltf.scene);
+    // }, undefined, function (error) {console.error(error);});
+    // console.log("hello");
+    // // light
+    // const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    // scene.add( directionalLight );
+    
+    // var animate = function () {
+    //   delta += clock.getDelta();
+    //   if (delta  > interval) {
+    //     requestAnimationFrame(animate);
+    //     renderer.render(scene, camera);
+    //     controls.update();
+    //     delta = delta % interval;
+    //   }
+    // };
+    // animate();
+
     const axesHelper = new THREE.AxesHelper( 5 );
     scene.add( axesHelper );
 
@@ -72,25 +99,20 @@ export default function Home() {
       gltf.scene.position.x = 5;
       scene.add(gltf.scene);
     }, undefined, function (error) {console.error(error);});
-    console.log("hello");
+
     // light
     const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
     scene.add( directionalLight );
     
     var animate = function () {
-      delta += clock.getDelta();
-      if (delta  > interval) {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-        controls.update();
-        delta = delta % interval;
-      }
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+      controls.update();
     };
     animate();
 
   }, []);
   return (
-        <div class="h-full w-full" ref={mapContainer}></div>
-
+    <div class="h-full w-full" ref={mapContainer}></div>
   );
 }

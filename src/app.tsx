@@ -9,6 +9,7 @@ import Home from './pages/home';
 import WeatherIcon from './status/WeatherIcon';
 import WeatherDisplay from './status/WeatherDisplay';
 import TimeDisplay from './status/TimeDisplay';
+import Logo from './status/Logo';
 
 const getTime = () => {
   const date = new Date();
@@ -39,9 +40,7 @@ const App: Component = () => {
         <div class="min-h-screen grid grid-cols-2 gap-12 p-12 h-full">
             <div class="col-span-1 grid grid-rows-20 gap-4">
                 <div class="row-span-2 grid grid-cols-12 h-full gap-6 rounded-[32px]">
-                  <div class="col-span-4 bg-gray-300 h-full rounded-[32px] flex items-center justify-center">
-                    <img class="h-20" src="https://brand.mines.edu/wp-content/uploads/sites/425/2023/03/Mines-Logo-150-05.png" />
-                  </div>
+                  <Logo class="col-span-4 h-full" />
                   <TimeDisplay class="col-span-4 h-full" />
                   <WeatherDisplay class="h-full col-span-4" weatherCode={113} temperature={13} />
                 </div>

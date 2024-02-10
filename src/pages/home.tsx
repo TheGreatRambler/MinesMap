@@ -90,10 +90,7 @@ export default function Home() {
 
   }, []);
   return (
-      <div>
-        <button onClick={toggleFloor}>hello</button>
         <div class="h-full w-full" ref={mapContainer}></div>
-      </div>
 
   );
 }

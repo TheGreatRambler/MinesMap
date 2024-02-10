@@ -1,14 +1,17 @@
-
-import { CanvasTexture, SpriteMaterial, Sprite } from 'three';
-
+import { Building } from './Building';
+import { Room } from './Room';
 
 export class Floor {
+  building: Building
   modelPath: string;
   model: any;
+  rooms: Room[]
 
-  constructor(modelPath: string){
+  constructor(building: Building, modelPath: string){
+    this.building = building;
     this.modelPath = modelPath;
     this.model = null;
+    this.rooms = [];
   }
 
   load(gltfloader, scene){
@@ -21,35 +24,19 @@ export class Floor {
       thisReference.model = object;
       console.log(object);
       console.log(glb.scene)
-      for (const child of glb.scene.children){
-        // Ignore non-numeric names
-        if (isNaN(parseInt(child.name))){
+      for (const child of glb.scene.children) {
+        // Ignore children whose name entirely consists of
+        // numbers
+        if (child.name.endsWith('mesh')) {
           continue;
         }
-
-        // Create a canvas and draw text
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        context.font = '16px Arial';
-        // Black background, white text
-        context.fillStyle = 'white';
-        // All room names are 3 digits, extend numbers as such.
-        context.fillText("MZ22", 25, 25);
-
-        // Create a texture from the canvas
-        const texture = new CanvasTexture(canvas);
-
-        // Create a material with the texture
-        const spriteMaterial = new SpriteMaterial({ map: texture });
-
-        // Create a sprite with the material
-        const sprite = new Sprite(spriteMaterial);
-        console.log(child.position.x, child.position.y);
-        sprite.position.x = object.position.x + child.position.x;
-        sprite.position.z = object.position.z + child.position.z;
-        sprite.position.y = object.position.y
-
-        scene.add(sprite)
+        const number = parseInt(child.name);
+        if (isNaN(number)) {
+          continue;
+        }
+        const room = new Room(child.position.x, child.position.y, child.position.z, thisReference.building, number);
+        room.load(scene);
+        thisReference.rooms.push(room);
       }
     }, undefined, function (error) {console.error(error);});
   }
@@ -57,12 +44,18 @@ export class Floor {
   show(){
     if (this.model){
       this.model.visible = true;
+      for (const room of this.rooms){
+        room.show();
+      }
     }
   }
 
   hide(){
     if (this.model){
       this.model.visible = false;
+      for (const room of this.rooms){
+        room.hide();
+      }
     }
   }
 }

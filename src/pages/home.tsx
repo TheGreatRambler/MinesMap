@@ -19,10 +19,7 @@ export default function Home(props: HomeProps) {
   const [currFloor, setCurrFloor] = createSignal(0);
 
 
-  var building = new Building("McNeil", 0, [
-    new Floor('model/floor1.glb'),
-    new Floor('model/floor2.glb')
-  ]);
+  var building = new Building("McNeil", "MC", 0, ['model/floor1.glb', 'model/floor2.glb']);
 
   const toggleBuilding = () => {
     setInBuilding(!inBuilding());

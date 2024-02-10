@@ -42,7 +42,7 @@ export default function Home(props: HomeProps) {
     targetCameraY = maxCameraY;
   }
 
-  let [setup, setSetup] = createSignal(false);
+  let setup = false;
 
   let mapContainer: HTMLDivElement;
   createEffect(() => {
@@ -58,7 +58,7 @@ export default function Home(props: HomeProps) {
     let raycaster = new THREE.Raycaster();
     let mouse = new THREE.Vector2();
 
-    if (!setup()) {
+    if (!setup) {
       window.addEventListener('click', onDocumentMouseClick, false);
       
       function onDocumentMouseClick(event) {
@@ -78,7 +78,7 @@ export default function Home(props: HomeProps) {
           }
         }
       }
-      setSetup(true);
+      setup = true;
     }
 
     // renderer

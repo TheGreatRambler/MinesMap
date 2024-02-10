@@ -4,7 +4,7 @@ import { Room } from './Room';
 export class Floor {
   building: Building
   modelPath: string;
-  model: any;
+  model: Promise<any>;
   rooms: Room[]
 
   constructor(building: Building, modelPath: string){
@@ -16,43 +16,49 @@ export class Floor {
 
   load(gltfloader, scene){
     let thisReference = this;
-    gltfloader.load(this.modelPath, function(glb) {
-      let object = glb.scene;
-      object.position.x = 0.5;
-      object.position.z = -1;
-      scene.add(object);
-      thisReference.model = object;
-      console.log(object);
-      console.log(glb.scene)
-      for (const child of glb.scene.children) {
-        // Ignore children whose name entirely consists of
-        // numbers
-        if (child.name.endsWith('mesh')) {
-          continue;
+    return this.model = new Promise((resolve, reject) => {
+      gltfloader.load(this.modelPath, function(glb) {
+        let object = glb.scene;
+        object.position.x = 0.5;
+        object.position.z = -1;
+        scene.add(object);
+        thisReference.model = object;
+        console.log(object);
+        console.log(glb.scene)
+        for (const child of glb.scene.children) {
+          // Ignore children whose name entirely consists of
+          // numbers
+          if (child.name.endsWith('mesh')) {
+            continue;
+          }
+          const number = parseInt(child.name);
+          if (isNaN(number)) {
+            continue;
+          }
+          const room = new Room(child.position.x, child.position.y, child.position.z, thisReference.building, number);
+          room.load(scene);
+          thisReference.rooms.push(room);
         }
-        const number = parseInt(child.name);
-        if (isNaN(number)) {
-          continue;
-        }
-        const room = new Room(child.position.x, child.position.y, child.position.z, thisReference.building, number);
-        room.load(scene);
-        thisReference.rooms.push(room);
-      }
-    }, undefined, function (error) {console.error(error);});
+        resolve(object);
+      }, undefined, function (error) {console.error(error); reject(error);});
+    })
   }
 
-  show(){
-    if (this.model){
-      this.model.visible = true;
+  async show(){
+    const model = await this.model;
+    if (model){
+      model.visible = true;
       for (const room of this.rooms){
         room.show();
       }
     }
   }
 
-  hide(){
-    if (this.model){
-      this.model.visible = false;
+  async hide(){
+    const model = await this.model;
+    if (model){
+      model.visible = false;
+      console.log(model);
       for (const room of this.rooms){
         room.hide();
       }

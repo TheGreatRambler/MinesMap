@@ -100,10 +100,6 @@ export default function Home(props: HomeProps) {
 
   }, []);
   return (
-    <div class="h-full w-full">
-      <div ref={mapContainer}>
-
-      </div>
-    </div>
+      <div class="h-full w-full" ref={mapContainer} />
   );
 }

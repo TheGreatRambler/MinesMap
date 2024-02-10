@@ -14,9 +14,8 @@ export class Floor {
     let thisReference = this;
     gltfloader.load(this.modelPath, function(glb) {
       let object = glb.scene;
-      object.scale.set(10,10,10);
-      object.position.z = -10;
-      object.position.x = 5;
+      object.position.x = 0.5;
+      object.position.z = -1;
       scene.add(object);
       thisReference.model = object;
       console.log(object);

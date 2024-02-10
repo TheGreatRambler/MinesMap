@@ -13,6 +13,7 @@ export default function Home(props: HomeProps) {
   const [inBuilding, setInBuilding] = createSignal(true);
   const [currFloor, setCurrFloor] = createSignal(0);
 
+
   var building = new Building("McNeil", 0, [
     new Floor('model/floor1.glb'),
     new Floor('model/floor2.glb')
@@ -53,10 +54,11 @@ export default function Home(props: HomeProps) {
     controls.mouseButtons = {
       LEFT: THREE.MOUSE.PAN,
       MIDDLE: THREE.MOUSE.DOLLY,
-      RIGHT: null//THREE.MOUSE.ROTATE
+      RIGHT: THREE.MOUSE.ROTATE
     }
-    controls.minDistance = 2.5;
-    controls.maxDistance = 10;
+    controls.maxDistance = 1.5;
+    controls.minDistance = 0.5;
+    camera.zoom = controls.maxDistance;
     
     // axis guide
     const axesHelper = new THREE.AxesHelper( 5 );
@@ -75,6 +77,12 @@ export default function Home(props: HomeProps) {
     // light
     const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
     scene.add( directionalLight );
+
+    const geometry = new THREE.SphereGeometry(0.01, 32, 16);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const sphere = new THREE.Mesh(geometry, material);
+    sphere.position.set(-1.3978030681610107,0.07625014334917068,-0.028978897258639336);
+    scene.add(sphere);
 
     // animate();
     var animate = function () {

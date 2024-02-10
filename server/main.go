@@ -1,10 +1,12 @@
 package main
 
 import (
-	"fmt" // formatting and printing values to the console.
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"io"
-	"log"      // logging messages to the console.
-	"net/http" // Used for build HTTP servers and clients.
+	"log"
+	"net/http"
 )
 
 // Port we listen on.
@@ -14,8 +16,64 @@ type Server struct {
 	HttpClient http.Client
 }
 
+type MinesEventsPayload struct {
+	FilterData struct {
+		Filters []struct {
+			FilterName   string `json:"filterName"`
+			Value        string `json:"value"`
+			DisplayValue int    `json:"displayValue"`
+			FilterType   int    `json:"filterType"`
+		} `json:"filters"`
+	} `json:"filterData"`
+}
+
 func (s *Server) GetEvents(w http.ResponseWriter, r *http.Request) {
-	elevation_req, err := http.NewRequest("GET", fmt.Sprintf("http://worldtimeapi.org/api/timezone/America/Denver"), nil)
+	postBody, _ := json.Marshal(MinesEventsPayload{
+		FilterData: struct {
+			Filters []struct {
+				FilterName   string `json:"filterName"`
+				Value        string `json:"value"`
+				DisplayValue int    `json:"displayValue"`
+				FilterType   int    `json:"filterType"`
+			} `json:"filters"`
+		}{
+			Filters: []struct {
+				FilterName   string `json:"filterName"`
+				Value        string `json:"value"`
+				DisplayValue int    `json:"displayValue"`
+				FilterType   int    `json:"filterType"`
+			}{
+				{
+					FilterName:   "StartDate",
+					Value:        "2024-02-1 00:00:00",
+					DisplayValue: 3,
+					FilterType:   3,
+				}, {
+					FilterName:   "EndDate",
+					Value:        "2024-03-1 00:00:00",
+					DisplayValue: 0,
+					FilterType:   3,
+				}, {
+					FilterName:   "TimeZone",
+					Value:        "102",
+					DisplayValue: 0,
+					FilterType:   2,
+				}, {
+					FilterName:   "RollupEventsToReservation",
+					Value:        "false",
+					DisplayValue: 0,
+					FilterType:   0,
+				}, {
+					FilterName:   "ResultType",
+					Value:        "Monthly",
+					DisplayValue: 0,
+					FilterType:   0,
+				},
+			},
+		},
+	})
+
+	elevation_req, err := http.NewRequest("POST", fmt.Sprintf("https://mines.emscloudservice.com/web/AnonymousServersApi.aspx/BrowseEvents"), bytes.NewBuffer(postBody))
 	if err != nil {
 		w.WriteHeader(500)
 		return

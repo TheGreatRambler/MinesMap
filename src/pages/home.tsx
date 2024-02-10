@@ -42,7 +42,7 @@ export default function Home() {
 
     // renderer
     var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(1000, 1000);
+    renderer.setSize(document.body.clientWidth, document.body.clientHeight);
     mapContainer.appendChild(renderer.domElement);
 
     // controls
@@ -55,42 +55,11 @@ export default function Home() {
     controls.minDistance = 2.5;
     controls.maxDistance = 10;
 
-    // cap fps
-    let clock = new THREE.Clock();
-    let delta = 0;
-    let interval = 1 / 30; // 30 fps
     
     // // axis guide
-    // const axesHelper = new THREE.AxesHelper( 5 );
-    // scene.add( axesHelper );
-
-    // // map
-    // const loader = new GLTFLoader();
-    // loader.load('model/example.gltf', function(gltf) {
-    //   gltf.scene.scale.set(10,10,10);
-    //   gltf.scene.position.z = -10;
-    //   gltf.scene.position.x = 5;
-    //   scene.add(gltf.scene);
-    // }, undefined, function (error) {console.error(error);});
-    // console.log("hello");
-    // // light
-    // const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-    // scene.add( directionalLight );
-    
-    // var animate = function () {
-    //   delta += clock.getDelta();
-    //   if (delta  > interval) {
-    //     requestAnimationFrame(animate);
-    //     renderer.render(scene, camera);
-    //     controls.update();
-    //     delta = delta % interval;
-    //   }
-    // };
-    // animate();
-
     const axesHelper = new THREE.AxesHelper( 5 );
     scene.add( axesHelper );
-
+    
     // map
     const loader = new GLTFLoader();
     loader.load('model/example.gltf', function(gltf) {
@@ -103,7 +72,17 @@ export default function Home() {
     // light
     const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
     scene.add( directionalLight );
-    
+
+    // var animate = function () {
+    //   delta += clock.getDelta();
+    //   if (delta > interval) {
+    //     requestAnimationFrame(animate);
+    //     renderer.render(scene, camera);
+    //     controls.update();
+    //     delta = delta % interval;
+    //   }
+    // };
+    // animate();
     var animate = function () {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
@@ -113,6 +92,10 @@ export default function Home() {
 
   }, []);
   return (
-    <div class="h-full w-full" ref={mapContainer}></div>
+    <div class="h-full w-full">
+      <div ref={mapContainer}>
+
+      </div>
+    </div>
   );
 }

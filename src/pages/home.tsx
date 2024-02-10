@@ -83,10 +83,35 @@ export default function Home(props: HomeProps) {
     scene.add( directionalLight );
 
     // animate();
+    var fps = 30;
+    var now;
+    var then = Date.now();
+    var interval = 1000/fps;
+    var delta;
+    
     var animate = function () {
       requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-      controls.update();
+      now = Date.now();
+      delta = now - then;
+  
+      if (delta > interval) {
+          // update time stuffs
+  
+          // Just `then = now` is not enough.
+          // Lets say we set fps at 10 which means
+          // each frame takes 100ms
+          // Now frame executes in 16ms (60fps) so
+          // the loop iterates 7 times (16*7 = 112ms) until
+          // delta > interval and in this 7 iterations
+          // frame was rendered only once which is equivalent to
+          // 16.7fps. Therefore we subtract delta by interval
+          // to keep the delay constant overtime and so 1sec = 10 frames
+          then = now - (delta % interval);
+  
+          // ... Code for Drawing the Frame ...
+          renderer.render(scene, camera);
+          controls.update();
+      }
     };
     animate();
 

@@ -30,11 +30,11 @@ export class Floor {
         // Create a canvas and draw text
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        context.font = '30px Arial';
+        context.font = '16px Arial';
         // Black background, white text
         context.fillStyle = 'white';
         // All room names are 3 digits, extend numbers as such.
-        context.fillText("MC" + child.name.padStart(3, '0'), 10, 50);
+        context.fillText("MZ22", 25, 25);
 
         // Create a texture from the canvas
         const texture = new CanvasTexture(canvas);
@@ -45,9 +45,9 @@ export class Floor {
         // Create a sprite with the material
         const sprite = new Sprite(spriteMaterial);
         console.log(child.position.x, child.position.y);
-        sprite.position.x = child.position.x;
-        sprite.position.z = child.position.z;
-        sprite.position.y = 0
+        sprite.position.x = object.position.x + child.position.x;
+        sprite.position.z = object.position.z + child.position.z;
+        sprite.position.y = object.position.y
 
         scene.add(sprite)
       }

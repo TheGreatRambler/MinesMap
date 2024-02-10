@@ -1,35 +1,27 @@
 import { createSignal, createEffect, } from 'solid-js';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-
-// class Floor {
-//   constructor(){
-//     this.
-//   }
-// }
-
-// class Building { 
-//   currFloor : number;
-//   floors : Floor[];
-//   defaultFloor : number;
-//   constructor(floors, defaultFloor){
-//     this.floors = floors;
-//     this.defaultFloor = defaultFloor;
-//     this.currFloor = defaultFloor;
-//   }
-// }
+import { Building } from './map/Building';
+import { Floor } from './map/Floor';
 
 export interface HomeProps {
   inheritSize: boolean;
 }
 
 export default function Home(props: HomeProps) {
+  const [inBuilding, setInBuilding] = createSignal(true);
   const [currFloor, setCurrFloor] = createSignal(0);
+
+  var building = new Building("McNeil", 0, [
+    new Floor('model/floor1.glb'),
+    new Floor('model/floor2.glb')
+  ]);
+
 
   const toggleFloor = () => {
     setCurrFloor(1-currFloor());
+    building.moveToFloor(currFloor());
   }
 
   let mapContainer: HTMLDivElement;
@@ -66,16 +58,16 @@ export default function Home(props: HomeProps) {
     // axis guide
     const axesHelper = new THREE.AxesHelper( 5 );
     scene.add( axesHelper );
+
+    // ground
+    const geometry = new THREE.PlaneGeometry( 1, 1 );
+    const material = new THREE.MeshBasicMaterial( {color: 0x95ff7a, side: THREE.DoubleSide} );
+    const plane = new THREE.Mesh( geometry, material );
+    plane.rotateX(Math.PI/2);
+    scene.add(plane);
     
-    // map
-    const loader = new GLTFLoader();
-    loader.load('model/floor2.glb', function(glb) {
-      glb.scene.scale.set(10,10,10);
-      glb.scene.position.z = -10;
-      glb.scene.position.x = 5;
-      scene.add(glb.scene);
-      console.log(glb.scene);
-    }, undefined, function (error) {console.error(error);});
+    // load building
+    building.load(scene);
 
     // light
     const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
@@ -91,6 +83,9 @@ export default function Home(props: HomeProps) {
 
   }, []);
   return (
-      <div class="h-full w-full" ref={mapContainer} />
+      <div>
+        <button onClick={toggleFloor}>hello</button>
+        <div class="h-full w-full" ref={mapContainer} />
+      </div>
   );
 }

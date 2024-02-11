@@ -35,16 +35,15 @@ export default function Home(props: HomeProps) {
       setInBuilding(false);
       minCameraY = 5;
       maxCameraY = 8;
-      targetCameraY = 7;
+      targetCameraY = 8;
     } else {
       building.enter();
       setInBuilding(true);
-      minCameraY = 0.5;
-      maxCameraY = 2;
-      targetCameraY = 1.9;
+      minCameraY = 0.3;
+      maxCameraY = 1.1;
+      targetCameraY = 1.1;
     }
     inAnimation = true;
-    targetCameraY = maxCameraY;
   };
 
   let setup = false;
@@ -107,13 +106,9 @@ export default function Home(props: HomeProps) {
     controls.mouseButtons = {
       LEFT: THREE.MOUSE.PAN,
       MIDDLE: THREE.MOUSE.DOLLY,
-      RIGHT: THREE.MOUSE.ROTATE, //null
+      RIGHT: null
     };
-    controls.maxDistance = 1.5;
-    controls.minDistance = 0.75;
     controls.enableRotation = false;
-    
-    camera.zoom = controls.maxDistance;
 
     // axis guide
     const axesHelper = new THREE.AxesHelper(5);
@@ -147,29 +142,20 @@ export default function Home(props: HomeProps) {
       delta = now - then;
 
       if (delta > interval) {
-          // update time stuffs
-  
-          // Just `then = now` is not enough.
-          // Lets say we set fps at 10 which means
-          // each frame takes 100ms
-          // Now frame executes in 16ms (60fps) so
-          // the loop iterates 7 times (16*7 = 112ms) until
-          // delta > interval and in this 7 iterations
-          // frame was rendered only once which is equivalent to
-          // 16.7fps. Therefore we subtract delta by interval
-          // to keep the delay constant overtime and so 1sec = 10 frames
-          then = now - (delta % interval);
 
-          // animation stuff
-          if (inAnimation){
-            camera.position.y += (targetCameraY-camera.position.y)*ANIMATION_SPEED;
-            camera.position.x += (targetCameraX-camera.position.x)*ANIMATION_SPEED;
-            camera.position.z += (targetCameraZ-camera.position.z)*ANIMATION_SPEED;
-            if (Math.abs(camera.position.y-targetCameraY) < 0.01) inAnimation = false;
-          } else {
-            if (camera.position.y < minCameraY) camera.position.y = minCameraY;
-            if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
-          }
+        // animation stuff
+        if (inAnimation){
+          camera.position.y += (targetCameraY-camera.position.y)*ANIMATION_SPEED;
+          camera.position.x += (targetCameraX-camera.position.x)*ANIMATION_SPEED;
+          camera.position.z += (targetCameraZ-camera.position.z)*ANIMATION_SPEED;
+          if (Math.abs(camera.position.y-targetCameraY) < 0.01) inAnimation = false;
+        } else {
+          controls.minDistance = minCameraY;
+          controls.maxDistance = maxCameraY;
+        }
+        camera.rotation.set(-Math.PI/2, 0, 0) // <-- bugs happen without this :(
+        console.log(camera.rotation);
+        
         // update time stuffs
 
         // Just `then = now` is not enough.
@@ -182,25 +168,6 @@ export default function Home(props: HomeProps) {
         // 16.7fps. Therefore we subtract delta by interval
         // to keep the delay constant overtime and so 1sec = 10 frames
         then = now - (delta % interval);
-
-        // animation stuff
-        if (targetCameraY) {
-          if (camera.position.y < targetCameraY) {
-            camera.position.y = Math.min(
-              camera.position.y + ANIMATION_SPEED,
-              targetCameraY
-            );
-          } else if (camera.position.y > targetCameraY) {
-            camera.position.y = Math.max(
-              camera.position.y - ANIMATION_SPEED,
-              targetCameraY
-            );
-          }
-          if (Math.abs(camera.position.y - targetCameraY) < 0.01)
-            targetCameraY = null;
-        }
-        controls.maxDistance = maxCameraY;
-        controls.minDistance = minCameraY;
 
         // ... Code for Drawing the Frame ...
         // console.log(camera.position);

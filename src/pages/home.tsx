@@ -7,6 +7,7 @@ import { BigMap } from "./map/BigMap";
 
 import upArrow from "../assets/arrow_upward.svg";
 import downArrow from "../assets/arrow_down.svg";
+import EventList from "./events/EventList";
 
 export interface HomeProps {
   inheritSize: boolean;
@@ -40,6 +41,7 @@ export default function Home(props: HomeProps) {
     if (inBuilding()) {
       // building.leave();
       setInBuilding(false);
+      setCurrentRoom(undefined);
       minCameraY = 5;
       maxCameraY = 8;
       targetCameraY = 8;
@@ -77,7 +79,7 @@ export default function Home(props: HomeProps) {
   createEffect(() => {
     // scene
     var scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x007324);
+    scene.background = new THREE.Color(0xA3CE79);
 
     // camera
     var camera = new THREE.PerspectiveCamera(
@@ -109,6 +111,7 @@ export default function Home(props: HomeProps) {
 
         for (let i = 0; i < intersects.length; i++) {
           if (intersects[i].object instanceof THREE.Sprite) {
+            setCurrentRoom(undefined)
             setCurrentRoom(intersects[i].object.room)
           }
         }
@@ -167,6 +170,10 @@ export default function Home(props: HomeProps) {
       // light.shadow.camera.left = -1;
       // light.shadow.camera.right = 1;
       // light.shadow.camera.visible = true;
+      light.castShadow = true;
+      // Set shadow map size
+      light.shadow.mapSize.width = 1024;
+      light.shadow.mapSize.height = 1024;
       scene.add(light);
     }
 
@@ -232,13 +239,13 @@ export default function Home(props: HomeProps) {
             <div class="w-full col-span-1">
               <button
                 onClick={toggleBuilding}
-                class={`w-full rounded-2xl w-8 h-8 mb-4 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${
+                class={`w-full rounded-2xl w-8 h-8 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${
                   inBuilding() ? "text-black bg-gray-400" : "bg-gray-300"
                 }`}
               >
                 <p class="text-xl font-open-sans font-bold">McNeil Hall</p>
               </button>
-              <button
+{/*               <button
                 onClick={toggleBuilding}
                 class="bg-gray-300 w-full rounded-2xl w-8 h-8 mb-4 p-8 flex justify-center items-center"
               >
@@ -249,7 +256,7 @@ export default function Home(props: HomeProps) {
                 class="bg-gray-300 w-full rounded-2xl w-8 h-8 p-8 flex justify-center items-center"
               >
                 <p class="text-xl text-black font-open-sans font-bold">CTLM</p>
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -301,12 +308,29 @@ export default function Home(props: HomeProps) {
               <button
                 class={`bg-gray-300 w-full rounded-full col-span-1 h-12 p-4 flex justify-center items-center 
                 ${currentRoom() !== undefined && currentRoom().name === room.name ? "bg-gray-400" : "bg-gray-300"}`}
-                onClick={() => setCurrentRoom(room)}
+                onClick={() => {
+                  if (currentRoom() === room) {
+                    setCurrentRoom(undefined);
+                } else {
+                    setCurrentRoom(undefined);
+                    setCurrentRoom(room);
+                  }
+                }}
               >
                   <p class="text-xl text-black font-open-sans font-bold">{room.name}</p>
               </button>
             ))}
           </div>: null}
+        </div>
+        <div class={`bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-col transition-all ease-in-out gap-4 duration-500 ${currentRoom() !== undefined ? "translate-y-0 opacity-full" : "translate-y-60 opacity-0"}`}>
+            <div
+              class={`flex flex-row items-center w-full justify-around bg-grey-300 transition-all ease-in-out duration-500}}`}
+            >
+              <p class="text-black text-4xl font-open-sans text-white font-bold">
+                Events
+              </p>
+            </div>
+              { currentRoom() !== null && currentRoom() !== undefined ? <EventList class="" room={currentRoom()} /> : null }
         </div>
       </div>
     </div>

@@ -19,6 +19,8 @@ export class Floor {
     return this.model = new Promise((resolve, reject) => {
       gltfloader.load(this.modelPath, function(glb) {
         let object = glb.scene;
+        object.castShadow = true; //default is false
+        object.receiveShadow = true; //default is false
         object.position.x = 0.5;
         object.position.z = -1;
         scene.add(object);

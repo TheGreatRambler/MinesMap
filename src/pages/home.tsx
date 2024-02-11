@@ -93,12 +93,14 @@ export default function Home(props: HomeProps) {
     }
 
     // renderer
-    var renderer = new THREE.WebGLRenderer();
+    var renderer = new THREE.WebGLRenderer({ antialias: true});
     if (props.inheritSize) {
       renderer.setSize(mapContainer.clientWidth, mapContainer.clientHeight);
     } else {
       renderer.setSize(document.body.clientWidth, document.body.clientHeight);
     }
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
     mapContainer.appendChild(renderer.domElement);
 
     // controls
@@ -110,9 +112,6 @@ export default function Home(props: HomeProps) {
     };
     controls.enableRotation = false;
 
-    // axis guide
-    const axesHelper = new THREE.AxesHelper(5);
-    scene.add(axesHelper);
 
     // ground
     const planeGeo = new THREE.PlaneGeometry(1000, 1000);
@@ -125,9 +124,20 @@ export default function Home(props: HomeProps) {
     building.load(scene);
     setCurrFloor(building.currFloor);
 
-    // light
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    scene.add(directionalLight);
+    // Create a light source and enable it to cast shadows
+    var light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(0, 0.5, -1);
+    light.castShadow = true; // default false
+    light.shadow.mapSize.width = 1024; // default
+    light.shadow.mapSize.height = 1024; // default
+    light.shadow.camera.near = 0.5; // default
+    light.shadow.camera.far = 500; // default
+    light.shadow.camera.top = 1;
+    light.shadow.camera.bottom = -1;
+    light.shadow.camera.left = -1;
+    light.shadow.camera.right = 1;
+    light.shadow.camera.visible = true
+    scene.add(light);
 
     // animate();
     var fps = 30;
@@ -153,7 +163,7 @@ export default function Home(props: HomeProps) {
           controls.minDistance = minCameraY;
           controls.maxDistance = maxCameraY;
         }
-        camera.rotation.set(-Math.PI/2, 0, 0) // <-- bugs happen without this :(
+        camera.rotation.set(-Math.PI/2 + Math.PI/30, 0, 0) // <-- bugs happen without this :(
         console.log(camera.rotation);
         
         // update time stuffs

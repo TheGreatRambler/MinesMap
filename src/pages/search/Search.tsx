@@ -6,7 +6,7 @@ import { Room } from "../map/Room";
 const Search: Component<{ selectedRoom: Accessor<Room>, buildings: Building[], switchTo: (roomDetails: string) => void }> = ({ selectedRoom, switchTo }) => {
   const allRooms = [ "MC205", "MC208", "MC209", "MC213", "MC214", "MC215", "MC216", "CK140", "CK155", "CK165", "BB126",
               "BB206", "BB269", "BBW250", "BBW280", "BBW375", "BBW475", "BB242", "BB253", "BBW220", "BBW270", "BB304",
-              "AH130", "AH141"];
+              "AH130", "AH141", "MC141", "MC137", "MC139", "MC135", "MC127", "MC126", "MC111", "MC189", "MC143", "MC119"];
   
   // for (const building of buildings) {
   //   for (const floor of building.floors) {

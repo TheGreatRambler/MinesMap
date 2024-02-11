@@ -5,6 +5,8 @@ export class Room {
   x: number;
   y: number;
   z: number;
+  building: Building;
+  number: number;
   name: string;
   sprite: Sprite;
 
@@ -12,6 +14,8 @@ export class Room {
     this.x = x;
     this.y = y;
     this.z = z;
+    this.building = building;
+    this.number = number;
     this.name = building.code + number;
   }
 

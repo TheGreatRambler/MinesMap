@@ -8,6 +8,8 @@ import { BigMap } from "./map/BigMap";
 import upArrow from "../assets/arrow_upward.svg";
 import downArrow from "../assets/arrow_down.svg";
 
+import locations from "../assets/locations.js";
+
 export interface HomeProps {
   inheritSize: boolean;
 }
@@ -26,6 +28,8 @@ export default function Home(props: HomeProps) {
   const ANIMATION_SPEED = 0.15;
   const FLOOR_HEIGHT = 0.08;
   var camY = 0;
+
+  var renderer = null;
 
   var building = new Building("McNeil", "MC", 1, [
     "/model/floor1.glb",
@@ -49,16 +53,16 @@ export default function Home(props: HomeProps) {
       bigMap.hide();
       setCurrFloor(building.defaultFloor);
       setInBuilding(true);
-      minCameraY = 0.3 + FLOOR_HEIGHT*currFloor();
-      maxCameraY = 1.1 + FLOOR_HEIGHT*currFloor();
+      minCameraY = 0.3 + FLOOR_HEIGHT * currFloor();
+      maxCameraY = 1.1 + FLOOR_HEIGHT * currFloor();
       targetCameraY = maxCameraY;
     }
     inAnimation = true;
   };
 
   const shiftCamera = (isDown) => {
-    if (inBuilding()){
-      if (isDown){
+    if (inBuilding()) {
+      if (isDown) {
         minCameraY -= FLOOR_HEIGHT;
         maxCameraY -= FLOOR_HEIGHT;
         targetCameraY = camY - FLOOR_HEIGHT;
@@ -117,7 +121,7 @@ export default function Home(props: HomeProps) {
     }
 
     // renderer
-    var renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true });
     if (props.inheritSize) {
       renderer.setSize(mapContainer.clientWidth, mapContainer.clientHeight);
     } else {
@@ -177,30 +181,108 @@ export default function Home(props: HomeProps) {
     var interval = 1000 / fps;
     var delta;
 
+    var renderer360Open = false;
+    var cameraOffscreen360X = 0;
+    var cameraOffscreen360Y = -1000;
+    var cameraOffscreen360Z = 0;
+    var cameraLast360X = 0;
+    var cameraLast360Y = 0;
+    var cameraLast360Z = 0;
+    var renderer360Open = false;
+
     controls.update();
-    console.log(camera.position);
-    console.log(controls.target)
+    //console.log(camera.position);
+    //console.log(controls.target)
 
     var animate = function () {
-      requestAnimationFrame(animate);
       now = Date.now();
       delta = now - then;
 
       if (delta > interval) {
         // animation stuff
-        if (inAnimation){
-          let pos = camera.position;
-          let dy = (targetCameraY-pos.y)*ANIMATION_SPEED;
-          let dx = (targetCameraX-pos.x)*ANIMATION_SPEED;
-          let dz = (targetCameraZ-pos.z)*ANIMATION_SPEED;
-          pos.add(new THREE.Vector3(dx, dy, dz));
-          controls.target.set(pos.x, 0, pos.z);
-          if (Math.abs(pos.y-targetCameraY) < 0.01) inAnimation = false;
-        } else {
-          if (camera.position.y < minCameraY) camera.position.y = minCameraY;
-          if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
+        if (!renderer360Open) {
+          if (inAnimation) {
+            let pos = camera.position;
+            let dy = (targetCameraY - pos.y) * ANIMATION_SPEED;
+            let dx = (targetCameraX - pos.x) * ANIMATION_SPEED;
+            let dz = (targetCameraZ - pos.z) * ANIMATION_SPEED;
+            pos.add(new THREE.Vector3(dx, dy, dz));
+            controls.target.set(pos.x, 0, pos.z);
+            if (Math.abs(pos.y - targetCameraY) < 0.01) inAnimation = false;
+          } else {
+            if (camera.position.y < minCameraY) camera.position.y = minCameraY;
+            if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
+          }
+          controls.update();
         }
-        controls.update();
+
+        if (camera.position.y < (0.3 + FLOOR_HEIGHT * currFloor() + 0.1) && !renderer360Open) {
+          renderer360Open = true;
+
+          let minimum = Infinity;
+          let minimumEntry = "";
+
+          for (let i = 0; i < locations.length; i++) {
+            let entry = locations[i];
+
+            let x = entry[1].x;
+            let y = entry[1].y;
+            let distance = Math.pow(camera.position.x - x, 2) + Math.pow(camera.position.y - y, 2);
+
+            if (distance < minimum) {
+              minimum = distance;
+              minimumEntry = entry[0] as string;
+            }
+          }
+
+          let mat = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load(`/360_images/${minimumEntry}.png`) });
+          mat.side = THREE.BackSide;
+          let mesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, 60, 40), mat);
+
+          mesh.position.set(cameraOffscreen360X, cameraOffscreen360Y, cameraOffscreen360Z);
+          scene.add(mesh);
+
+          cameraLast360X = camera.position.x;
+          cameraLast360Y = camera.position.y;
+          cameraLast360Z = camera.position.z;
+
+          camera.position.x = cameraOffscreen360X;
+          camera.position.y = cameraOffscreen360Y;
+          camera.position.z = cameraOffscreen360Z;
+
+          let escapeHandler = (event) => {
+            const keyName = event.key;
+            if (keyName === "Escape") {
+              renderer360Open = false;
+
+              controls.target.set(cameraLast360X, 0, cameraLast360Z);
+
+              document.removeEventListener("keydown", escapeHandler);
+
+              // Remove mesh entirely
+              scene.remove(mesh);
+              mesh.geometry.dispose();
+              mesh.material.dispose();
+              mesh = undefined;
+
+              camera.rotation.x = -1.5707953267948966;
+              camera.rotation.y = 0;
+              camera.rotation.z = 0;
+
+              camera.position.x = cameraLast360X;
+              camera.position.y = cameraLast360Y + 0.5;
+              camera.position.z = cameraLast360Z;
+            }
+          };
+
+          document.addEventListener("keydown", escapeHandler, false);
+        }
+
+        if (renderer360Open) {
+          camera.position.x = cameraOffscreen360X;
+          camera.position.y = cameraOffscreen360Y;
+          camera.position.z = cameraOffscreen360Z;
+        }
 
 
         // update time stuffs
@@ -215,26 +297,26 @@ export default function Home(props: HomeProps) {
         // 16.7fps. Therefore we subtract delta by interval
         // to keep the delay constant overtime and so 1sec = 10 frames
         then = now - (delta % interval);
-        
+
         // ... Code for Drawing the Frame ...
         renderer.render(scene, camera);
       }
+
+      requestAnimationFrame(animate);
     }
     animate();
   }, []);
 
   return (
-    <div>
-      <div class="h-full w-full" ref={mapContainer} />
+    <div><div class="h-full w-full" ref={mapContainer} />
       <div class="absolute top-0 left-0">
         <div class="bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-col transition-all ease-in-out gap-4 duration-500">
           <div class="flex flex-row transition-all ease-in-out duration-500">
             <div class="w-full col-span-1">
               <button
                 onClick={toggleBuilding}
-                class={`w-full rounded-2xl w-8 h-8 mb-4 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${
-                  inBuilding() ? "text-black bg-gray-400" : "bg-gray-300"
-                }`}
+                class={`w-full rounded-2xl w-8 h-8 mb-4 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${inBuilding() ? "text-black bg-gray-400" : "bg-gray-300"
+                  }`}
               >
                 <p class="text-xl font-open-sans font-bold">McNeil Hall</p>
               </button>
@@ -254,59 +336,59 @@ export default function Home(props: HomeProps) {
           </div>
         </div>
         <div class={`bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-col transition-all ease-in-out gap-4 duration-500 ${inBuilding() ? "translate-y-0 opacity-full" : "translate-y-60 opacity-0"}`}>
-            <div
-              class={`flex flex-row items-center w-full justify-around bg-grey-300 transition-all ease-in-out duration-500}}`}
+          <div
+            class={`flex flex-row items-center w-full justify-around bg-grey-300 transition-all ease-in-out duration-500}}`}
+          >
+            <button
+              class="w-16 h-16 bg-white rounded-full flex justify-center items-center"
+              onClick={() =>
+                inBuilding()
+                  ? setCurrFloor((floor) => {
+                    if (floor + 1 >= building.floors.length) return floor;
+                    setCurrentRoom(undefined);
+                    building.up();
+                    shiftCamera(false);
+                    return floor + 1;
+                  })
+                  : null
+              }
             >
-              <button
-                class="w-16 h-16 bg-white rounded-full flex justify-center items-center"
-                onClick={() =>
-                  inBuilding()
-                    ? setCurrFloor((floor) => {
-                        if (floor + 1 >= building.floors.length) return floor;
-                        setCurrentRoom(undefined);
-                        building.up();
-                        shiftCamera(false);
-                        return floor + 1;
-                      })
-                    : null
-                }
-              >
-                <img src={upArrow} alt="go up" class="w-8 h-8" />
-              </button>
-              <p class="text-black text-4xl font-open-sans text-white font-bold">
-                {currFloor() + 1}
-              </p>
-              <button
-                class="w-16 h-16 rounded-full bg-white flex justify-center items-center"
-                onClick={() =>
-                  inBuilding()
-                    ? setCurrFloor((floor) => {
-                        if (floor - 1 < 0) return floor;
-                        if (!inBuilding()) return floor;
-                        setCurrentRoom(undefined);
-                        building.down();
-                        shiftCamera(true);
-                        return floor - 1;
-                      })
-                    : null
-                }
-              >
-                <img src={downArrow} alt="go down" class="w-8 h-8" />
-              </button>
-            </div>
-          {building.floors[inBuilding() ? currFloor() : currFloor()].rooms.length > 1 ? 
-          <div class="grid grid-cols-2 gap-2">
-            
-            {building.floors[inBuilding() ? currFloor() : currFloor()].rooms.map((room) => (
-              <button
-                class={`bg-gray-300 w-full rounded-full col-span-1 h-12 p-4 flex justify-center items-center 
+              <img src={upArrow} alt="go up" class="w-8 h-8" />
+            </button>
+            <p class="text-black text-4xl font-open-sans text-white font-bold">
+              {currFloor() + 1}
+            </p>
+            <button
+              class="w-16 h-16 rounded-full bg-white flex justify-center items-center"
+              onClick={() =>
+                inBuilding()
+                  ? setCurrFloor((floor) => {
+                    if (floor - 1 < 0) return floor;
+                    if (!inBuilding()) return floor;
+                    setCurrentRoom(undefined);
+                    building.down();
+                    shiftCamera(true);
+                    return floor - 1;
+                  })
+                  : null
+              }
+            >
+              <img src={downArrow} alt="go down" class="w-8 h-8" />
+            </button>
+          </div>
+          {building.floors[inBuilding() ? currFloor() : currFloor()].rooms.length > 1 ?
+            <div class="grid grid-cols-2 gap-2">
+
+              {building.floors[inBuilding() ? currFloor() : currFloor()].rooms.map((room) => (
+                <button
+                  class={`bg-gray-300 w-full rounded-full col-span-1 h-12 p-4 flex justify-center items-center 
                 ${currentRoom() !== undefined && currentRoom().name === room.name ? "bg-gray-400" : "bg-gray-300"}`}
-                onClick={() => setCurrentRoom(room)}
-              >
+                  onClick={() => setCurrentRoom(room)}
+                >
                   <p class="text-xl text-black font-open-sans font-bold">{room.name}</p>
-              </button>
-            ))}
-          </div>: null}
+                </button>
+              ))}
+            </div> : null}
         </div>
       </div>
     </div>

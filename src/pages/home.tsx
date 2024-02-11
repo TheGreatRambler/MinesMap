@@ -1,13 +1,15 @@
-import { createSignal, createEffect } from "solid-js";
+import { createSignal, createEffect, Show } from "solid-js";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 import { Building } from "./map/Building";
 import { BigMap } from "./map/BigMap";
+import { Room } from "./map/Room";
 
 import upArrow from "../assets/arrow_upward.svg";
 import downArrow from "../assets/arrow_down.svg";
 import EventList from "./events/EventList";
+import Search from "./search/Search";
 
 export interface HomeProps {
   inheritSize: boolean;
@@ -20,36 +22,59 @@ export default function Home(props: HomeProps) {
   // animation stuff
   var minCameraY = 5;
   var maxCameraY = 8;
-  const targetCameraX = -0.17;
-  var targetCameraY = null;
-  const targetCameraZ = 0.17;
+  let targetCameraX = -0.17;
+  let targetCameraY = null;
+  let targetCameraZ = 0.17;
   var inAnimation = false;
   const ANIMATION_SPEED = 0.15;
   const FLOOR_HEIGHT = 0.08;
   var camY = 0;
 
-  var building = new Building("McNeil", "MC", 1, [
+  const building = new Building("McNeil", "MC", 1, [
     "/model/floor1.glb",
     "/model/floor2.glb",
   ]);
 
-  var bigMap = new BigMap("/model/fullmap.glb");
+  const bigMap = new BigMap("/model/fullmap.glb");
 
   const [currFloor, setCurrFloor] = createSignal(building.currFloor);
 
-  const toggleBuilding = () => {
-    if (inBuilding()) {
+  createEffect(() => {
+    let t = currentRoom();
+    if (t === undefined) return;
+    targetCameraX = t.x + 0.5;
+    targetCameraZ = t.z - 1;
+    // targetCameraY = camera.pos.y;
+    inAnimation = true;
+  });
+
+  const toggleBuilding = (roomName: string | undefined) => {
+    // Terrible, but it works
+    let chosen = undefined;
+    for (const floor of building.floors) {
+      for (const room of floor.rooms) {
+        if (room.name === roomName)
+          chosen = room;
+          inAnimation = true;
+      }
+    }
+
+    if (inBuilding() && chosen == undefined) {
       // building.leave();
       setInBuilding(false);
-      setCurrentRoom(undefined);
+      setCurrentRoom(chosen);
       minCameraY = 5;
       maxCameraY = 8;
       targetCameraY = 8;
       bigMap.show();
     } else {
+      targetCameraX = -0.17;
+      targetCameraZ = 0.17;
+
       building.enter();
       bigMap.hide();
       setCurrFloor(building.defaultFloor);
+      setCurrentRoom(chosen);
       setInBuilding(true);
       minCameraY = 0.3 + FLOOR_HEIGHT*currFloor();
       maxCameraY = 1.1 + FLOOR_HEIGHT*currFloor();
@@ -202,7 +227,7 @@ export default function Home(props: HomeProps) {
           let dz = (targetCameraZ-pos.z)*ANIMATION_SPEED;
           pos.add(new THREE.Vector3(dx, dy, dz));
           controls.target.set(pos.x, 0, pos.z);
-          if (Math.abs(pos.y-targetCameraY) < 0.01) inAnimation = false;
+          if (Math.sqrt((pos.y-targetCameraY)**2 + (pos.z-targetCameraZ)**2 + (pos.x-targetCameraX)**2) < 0.01) inAnimation = false;
         } else {
           if (camera.position.y < minCameraY) camera.position.y = minCameraY;
           if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
@@ -233,33 +258,28 @@ export default function Home(props: HomeProps) {
   return (
     <div>
       <div class="h-full w-full" ref={mapContainer} />
+
+      <div class="absolute top-0 right-0">
+        <Search switchTo={(room) => toggleBuilding(room)} buildings={[building]} selectedRoom={currentRoom}></Search>
+      </div>
+
       <div class="absolute top-0 left-0">
-        <div class="bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-col transition-all ease-in-out gap-4 duration-500">
-          <div class="flex flex-row transition-all ease-in-out duration-500">
-            <div class="w-full col-span-1">
-              <button
-                onClick={toggleBuilding}
-                class={`w-full rounded-2xl w-8 h-8 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${
-                  inBuilding() ? "text-black bg-gray-400" : "bg-gray-300"
-                }`}
-              >
-                <p class="text-xl font-open-sans font-bold">McNeil Hall</p>
-              </button>
-{/*               <button
-                onClick={toggleBuilding}
-                class="bg-gray-300 w-full rounded-2xl w-8 h-8 mb-4 p-8 flex justify-center items-center"
-              >
-                <p class="text-xl text-black font-open-sans font-bold">Beck</p>
-              </button>
-              <button
-                onClick={toggleBuilding}
-                class="bg-gray-300 w-full rounded-2xl w-8 h-8 p-8 flex justify-center items-center"
-              >
-                <p class="text-xl text-black font-open-sans font-bold">CTLM</p>
-              </button> */}
+        <Show when={inBuilding()}>
+          <div class="bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-col transition-all ease-in-out gap-4 duration-500">
+            <div class="flex flex-row transition-all ease-in-out duration-500">
+              <div class="w-full col-span-1">
+                <button
+                  onClick={() => toggleBuilding(undefined)}
+                  class={`w-full rounded-2xl w-8 h-8 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${
+                    inBuilding() ? "text-black bg-gray-400" : "bg-gray-300"
+                  }`}
+                >
+                  <p class="text-xl font-open-sans font-bold">McNeil Hall</p>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </Show>
         <div class={`bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-col transition-all ease-in-out gap-4 duration-500 ${inBuilding() ? "translate-y-0 opacity-full" : "translate-y-60 opacity-0"}`}>
             <div
               class={`flex flex-row items-center w-full justify-around bg-grey-300 transition-all ease-in-out duration-500}}`}

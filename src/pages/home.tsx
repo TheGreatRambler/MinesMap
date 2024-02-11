@@ -57,7 +57,7 @@ export default function Home(props: HomeProps) {
       for (const room of floor.rooms) {
         if (room.name === roomName)
           chosen = room;
-          inAnimation = true;
+        inAnimation = true;
       }
     }
 
@@ -236,7 +236,7 @@ export default function Home(props: HomeProps) {
             pos.add(new THREE.Vector3(dx, dy, dz));
             camY = pos.y;
             controls.target.set(pos.x, 0, pos.z);
-            if (Math.sqrt((pos.y-targetCameraY)**2 + (pos.z-targetCameraZ)**2 + (pos.x-targetCameraX)**2) < 0.01) inAnimation = false;
+            if (Math.sqrt((pos.y - targetCameraY) ** 2 + (pos.z - targetCameraZ) ** 2 + (pos.x - targetCameraX) ** 2) < 0.01) inAnimation = false;
           } else {
             if (camera.position.y < minCameraY) camera.position.y = minCameraY;
             if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
@@ -266,6 +266,7 @@ export default function Home(props: HomeProps) {
           let mat = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load(`/360_images/${minimumEntry}.png`) });
           mat.side = THREE.BackSide;
           let mesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, 60, 40), mat);
+          mesh.scale.x = -1;
 
           mesh.position.set(cameraOffscreen360X, cameraOffscreen360Y, cameraOffscreen360Z);
           scene.add(mesh);
@@ -347,9 +348,8 @@ export default function Home(props: HomeProps) {
               <div class="w-full col-span-1">
                 <button
                   onClick={() => toggleBuilding(undefined)}
-                  class={`w-full rounded-2xl w-8 h-8 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${
-                    inBuilding() ? "text-black bg-gray-400" : "bg-gray-300"
-                  }`}
+                  class={`w-full rounded-2xl w-8 h-8 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${inBuilding() ? "text-black bg-gray-400" : "bg-gray-300"
+                    }`}
                 >
                   <p class="text-xl font-open-sans font-bold">McNeil Hall</p>
                 </button>

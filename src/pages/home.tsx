@@ -13,6 +13,7 @@ export interface HomeProps {
 
 export default function Home(props: HomeProps) {
   const [inBuilding, setInBuilding] = createSignal(false);
+  const [currentRoom, setCurrentRoom] = createSignal(undefined);
 
   // animation stuff
   var minCameraY = 5;
@@ -82,10 +83,7 @@ export default function Home(props: HomeProps) {
 
         for (let i = 0; i < intersects.length; i++) {
           if (intersects[i].object instanceof THREE.Sprite) {
-            console.log(
-              "Sprite clicked!" + JSON.stringify(intersects[i].object.room.name)
-            );
-            // Here you can add what should happen on click
+            setCurrentRoom(intersects[i].object.room)
           }
         }
       }
@@ -93,7 +91,7 @@ export default function Home(props: HomeProps) {
     }
 
     // renderer
-    var renderer = new THREE.WebGLRenderer({ antialias: true});
+    var renderer = new THREE.WebGLRenderer({ antialias: true });
     if (props.inheritSize) {
       renderer.setSize(mapContainer.clientWidth, mapContainer.clientHeight);
     } else {
@@ -108,9 +106,13 @@ export default function Home(props: HomeProps) {
     controls.mouseButtons = {
       LEFT: THREE.MOUSE.PAN,
       MIDDLE: THREE.MOUSE.DOLLY,
-      RIGHT: null
+      RIGHT: null,
     };
+<<<<<<< HEAD
     controls.enableRotate = false;
+=======
+    controls.enableRotation = false;
+>>>>>>> b21ea7a (Actual room lists)
 
     // ground
     const planeGeo = new THREE.PlaneGeometry(1000, 1000);
@@ -135,7 +137,7 @@ export default function Home(props: HomeProps) {
     light.shadow.camera.bottom = -1;
     light.shadow.camera.left = -1;
     light.shadow.camera.right = 1;
-    light.shadow.camera.visible = true
+    light.shadow.camera.visible = true;
     scene.add(light);
 
     // animate();
@@ -156,11 +158,22 @@ export default function Home(props: HomeProps) {
           let pos = camera.position;
           pos.y = pos.y+(targetCameraY-pos.y)*ANIMATION_SPEED;
           if (Math.abs(pos.y-targetCameraY) < 0.01) inAnimation = false;
+        if (inAnimation) {
+          camera.position.y +=
+            (targetCameraY - camera.position.y) * ANIMATION_SPEED;
+          camera.position.x +=
+            (targetCameraX - camera.position.x) * ANIMATION_SPEED;
+          camera.position.z +=
+            (targetCameraZ - camera.position.z) * ANIMATION_SPEED;
+          if (Math.abs(camera.position.y - targetCameraY) < 0.01)
+            inAnimation = false;
         } else {
           if (camera.position.y < minCameraY) camera.position.y = minCameraY;
           if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
         }
         
+        camera.rotation.set(-Math.PI / 2 + Math.PI / 30, 0, 0); // <-- bugs happen without this :(
+
         // update time stuffs
 
         // Just `then = now` is not enough.
@@ -184,53 +197,84 @@ export default function Home(props: HomeProps) {
     <div>
       <div class="h-full w-full" ref={mapContainer} />
       <div class="absolute top-0 left-0">
-        <div class="bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-row transition-all ease-in-out duration-500">
-          <div class="w-full col-span-1">
-            <button 
-            onClick={toggleBuilding} class={`w-full rounded-2xl w-8 h-8 mb-4 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${inBuilding() ? "text-black bg-gray-400" : "bg-gray-300" }`}>
-              <p 
-            class="text-xl font-open-sans font-bold">McNeil Hall</p>
-            </button>
-            <button 
-            onClick={toggleBuilding} class="bg-gray-300 w-full rounded-2xl w-8 h-8 mb-4 p-8 flex justify-center items-center">
-              <p 
-            class="text-xl text-black font-open-sans font-bold">Beck</p>
-            </button>
-            <button 
-            onClick={toggleBuilding} class="bg-gray-300 w-full rounded-2xl w-8 h-8 p-8 flex justify-center items-center">
-              <p 
-            class="text-xl text-black font-open-sans font-bold">CTLM</p>
-            </button>
+        <div class="bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-col transition-all ease-in-out gap-4 duration-500">
+          <div class="flex flex-row transition-all ease-in-out duration-500">
+            <div class="w-full col-span-1">
+              <button
+                onClick={toggleBuilding}
+                class={`w-full rounded-2xl w-8 h-8 mb-4 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${
+                  inBuilding() ? "text-black bg-gray-400" : "bg-gray-300"
+                }`}
+              >
+                <p class="text-xl font-open-sans font-bold">McNeil Hall</p>
+              </button>
+              <button
+                onClick={toggleBuilding}
+                class="bg-gray-300 w-full rounded-2xl w-8 h-8 mb-4 p-8 flex justify-center items-center"
+              >
+                <p class="text-xl text-black font-open-sans font-bold">Beck</p>
+              </button>
+              <button
+                onClick={toggleBuilding}
+                class="bg-gray-300 w-full rounded-2xl w-8 h-8 p-8 flex justify-center items-center"
+              >
+                <p class="text-xl text-black font-open-sans font-bold">CTLM</p>
+              </button>
+            </div>
           </div>
-          <div class={`flex flex-col items-center justify-center bg-grey-300 transition-all ease-in-out duration-500 ${inBuilding() ? 'w-56 opacity-full ms-4' : 'w-0 opacity-0'}`}>
-            <button
-              class="mb-4 w-16 h-16 bg-white rounded-full flex justify-center items-center"
-              onClick={() => inBuilding() ?
-                setCurrFloor((floor) => {
-                  if (floor + 1 >= building.floors.length) return floor;
-                  building.up();
-                  return floor + 1;
-                }) : null}
+        </div>
+        <div class={`bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-col transition-all ease-in-out gap-4 duration-500 ${inBuilding() ? "translate-y-0 opacity-full" : "translate-y-60 opacity-0"}`}>
+            <div
+              class={`flex flex-row items-center w-full justify-around bg-grey-300 transition-all ease-in-out duration-500}}`}
             >
-              <img src={upArrow} alt="go up" class="w-8 h-8" />
-            </button>
-            <p class="mb-4 text-black text-4xl font-open-sans text-white font-bold">
-              {currFloor() + 1}
-            </p>
-            <button
-              class="w-16 h-16 rounded-full bg-white flex justify-center items-center"
-              onClick={() => inBuilding() ?
-                setCurrFloor((floor) => {
-                  if (floor - 1 < 0) return floor;
-                  if (!inBuilding()) return floor;
-                  building.down();
-                  return floor - 1;
-                }) : null
-              }
-            >
-              <img src={downArrow} alt="go down" class="w-8 h-8" />
-            </button>
-          </div>
+              <button
+                class="w-16 h-16 bg-white rounded-full flex justify-center items-center"
+                onClick={() =>
+                  inBuilding()
+                    ? setCurrFloor((floor) => {
+                        if (floor + 1 >= building.floors.length) return floor;
+                        setCurrentRoom(undefined);
+                        building.up();
+                        return floor + 1;
+                      })
+                    : null
+                }
+              >
+                <img src={upArrow} alt="go up" class="w-8 h-8" />
+              </button>
+              <p class="text-black text-4xl font-open-sans text-white font-bold">
+                {currFloor() + 1}
+              </p>
+              <button
+                class="w-16 h-16 rounded-full bg-white flex justify-center items-center"
+                onClick={() =>
+                  inBuilding()
+                    ? setCurrFloor((floor) => {
+                        if (floor - 1 < 0) return floor;
+                        if (!inBuilding()) return floor;
+                        setCurrentRoom(undefined);
+                        building.down();
+                        return floor - 1;
+                      })
+                    : null
+                }
+              >
+                <img src={downArrow} alt="go down" class="w-8 h-8" />
+              </button>
+            </div>
+          {building.floors[inBuilding() ? currFloor() : currFloor()].rooms.length > 1 ? 
+          <div class="grid grid-cols-2 gap-2">
+            
+            {building.floors[inBuilding() ? currFloor() : currFloor()].rooms.map((room) => (
+              <button
+                class={`bg-gray-300 w-full rounded-full col-span-1 h-12 p-4 flex justify-center items-center 
+                ${currentRoom() !== undefined && currentRoom().name === room.name ? "bg-gray-400" : "bg-gray-300"}`}
+                onClick={() => setCurrentRoom(room)}
+              >
+                  <p class="text-xl text-black font-open-sans font-bold">{room.name}</p>
+              </button>
+            ))}
+          </div>: null}
         </div>
       </div>
     </div>

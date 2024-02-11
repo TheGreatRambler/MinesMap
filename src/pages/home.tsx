@@ -42,9 +42,9 @@ export default function Home(props: HomeProps) {
       // building.leave();
       setInBuilding(false);
       setCurrentRoom(undefined);
-      minCameraY = 5;
-      maxCameraY = 8;
-      targetCameraY = 8;
+      minCameraY = 6;
+      maxCameraY = 10;
+      targetCameraY = 10;
       bigMap.show();
     } else {
       building.enter();
@@ -108,13 +108,20 @@ export default function Home(props: HomeProps) {
         raycaster.setFromCamera(mouse, camera); // assuming you have a camera object
 
         let intersects = raycaster.intersectObjects(scene.children, true); // assuming you have a scene object
-
         for (let i = 0; i < intersects.length; i++) {
+          // check for labels
           if (intersects[i].object instanceof THREE.Sprite) {
             setCurrentRoom(undefined)
             setCurrentRoom(intersects[i].object.room)
           }
+          // check for building
+          if (!inBuilding()){
+            if (intersects[i].object.name == "map_(1)osm_buildings008_1" || intersects[i].object.name == "map_(1)osm_buildings008_2") {
+              toggleBuilding();
+            }
+          }
         }
+
       }
       setup = true;
     }
@@ -141,6 +148,7 @@ export default function Home(props: HomeProps) {
 
     // load big map
     bigMap.load(scene);
+    console.log(bigMap)
 
     // load building
     building.load(scene);
@@ -160,16 +168,6 @@ export default function Home(props: HomeProps) {
     lights[3].position.set(0, 12, 25);
 
     for (const light of lights) {
-      // light.castShadow = true; // default false
-      // light.shadow.mapSize.width = 1024; // default
-      // light.shadow.mapSize.height = 1024; // default
-      // light.shadow.camera.near = 0.5; // default
-      // light.shadow.camera.far = 500; // default
-      // light.shadow.camera.top = 1;
-      // light.shadow.camera.bottom = -1;
-      // light.shadow.camera.left = -1;
-      // light.shadow.camera.right = 1;
-      // light.shadow.camera.visible = true;
       light.castShadow = true;
       // Set shadow map size
       light.shadow.mapSize.width = 1024;

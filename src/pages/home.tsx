@@ -429,16 +429,6 @@ export default function Home(props: HomeProps) {
           </div>
           {currentRoom() !== null && currentRoom() !== undefined ? <EventList class="" room={currentRoom()} /> : null}
         </div>
-        <div class={`bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-col transition-all ease-in-out gap-4 duration-500 ${currentRoom() !== undefined ? "translate-y-0 opacity-full" : "translate-y-60 opacity-0"}`}>
-          <div
-            class={`flex flex-row items-center w-full justify-around bg-grey-300 transition-all ease-in-out duration-500}}`}
-          >
-            <p class="text-black text-4xl font-open-sans text-white font-bold">
-              Events
-            </p>
-          </div>
-          {currentRoom() !== null && currentRoom() !== undefined ? <EventList class="" room={currentRoom()} /> : null}
-        </div>
       </div>
     </div>
   );

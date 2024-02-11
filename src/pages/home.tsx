@@ -244,7 +244,7 @@ export default function Home(props: HomeProps) {
           controls.update();
         }
 
-        if (camera.position.y < (0.3 + FLOOR_HEIGHT * currFloor() + 0.1) && !renderer360Open) {
+        if (camera.position.y < (0.3 + FLOOR_HEIGHT * currFloor() + 0.03) && !renderer360Open) {
           renderer360Open = true;
 
           let minimum = Infinity;

@@ -185,8 +185,6 @@ export default function Home(props: HomeProps) {
     var delta;
 
     controls.update();
-    console.log(camera.position);
-    console.log(controls.target)
 
     var animate = function () {
       requestAnimationFrame(animate);
@@ -201,14 +199,14 @@ export default function Home(props: HomeProps) {
           let dx = (targetCameraX-pos.x)*ANIMATION_SPEED;
           let dz = (targetCameraZ-pos.z)*ANIMATION_SPEED;
           pos.add(new THREE.Vector3(dx, dy, dz));
+          camY = pos.y;
           controls.target.set(pos.x, 0, pos.z);
-          if (Math.abs(pos.y-targetCameraY) < 0.01) inAnimation = false;
+          if (Math.abs(pos.y-targetCameraY) < 0.001) inAnimation = false;
         } else {
           if (camera.position.y < minCameraY) camera.position.y = minCameraY;
           if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
         }
         controls.update();
-
 
         // update time stuffs
 

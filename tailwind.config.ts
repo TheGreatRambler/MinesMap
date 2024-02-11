@@ -24,6 +24,20 @@ const config: Config = {
     }
   },
   plugins: [],
+
+  variants: {
+    extend: {
+      width: ['responsive', 'hover', 'focus'],
+      height: ['responsive', 'hover', 'focus'],
+    },
+  },
+  corePlugins: {
+    // ...
+    transitionProperty: true,
+    transitionDuration: true,
+    transitionTimingFunction: true,
+    transitionDelay: true,
+  },
 };
 
 export default config;

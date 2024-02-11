@@ -110,8 +110,7 @@ export default function Home(props: HomeProps) {
       MIDDLE: THREE.MOUSE.DOLLY,
       RIGHT: null
     };
-    controls.enableRotation = false;
-
+    controls.enableRotate = false;
 
     // ground
     const planeGeo = new THREE.PlaneGeometry(1000, 1000);
@@ -152,19 +151,15 @@ export default function Home(props: HomeProps) {
       delta = now - then;
 
       if (delta > interval) {
-
         // animation stuff
         if (inAnimation){
-          camera.position.y += (targetCameraY-camera.position.y)*ANIMATION_SPEED;
-          camera.position.x += (targetCameraX-camera.position.x)*ANIMATION_SPEED;
-          camera.position.z += (targetCameraZ-camera.position.z)*ANIMATION_SPEED;
-          if (Math.abs(camera.position.y-targetCameraY) < 0.01) inAnimation = false;
+          let pos = camera.position;
+          pos.y = pos.y+(targetCameraY-pos.y)*ANIMATION_SPEED;
+          if (Math.abs(pos.y-targetCameraY) < 0.01) inAnimation = false;
         } else {
-          controls.minDistance = minCameraY;
-          controls.maxDistance = maxCameraY;
+          if (camera.position.y < minCameraY) camera.position.y = minCameraY;
+          if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
         }
-        camera.rotation.set(-Math.PI/2 + Math.PI/30, 0, 0) // <-- bugs happen without this :(
-        console.log(camera.rotation);
         
         // update time stuffs
 
@@ -180,7 +175,6 @@ export default function Home(props: HomeProps) {
         then = now - (delta % interval);
 
         // ... Code for Drawing the Frame ...
-        // console.log(camera.position);
         renderer.render(scene, camera);
       }
     };

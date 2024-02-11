@@ -15,11 +15,27 @@ export class BigMap {
       gltfloader.load(this.modelPath, function(glb) {
         glb.scene.castShadow = true; //default is false
         glb.scene.receiveShadow = true; //default is false
-        glb.scene.position.x = 0.5;
-        glb.scene.position.z = -1;
+        glb.scene.scale.set(0.27,0.27,0.27);
+        glb.scene.rotation.y = 2.5;
+        glb.scene.position.x = 7.34;
+        glb.scene.position.z = -8.63;
         scene.add(glb.scene);
         resolve(glb.scene);
       }, undefined, function (error) {console.error(error); reject(error);});
     });
+  }
+
+  async show(){
+    const model = await this.model;
+    if (model){
+      model.visible = true;
+    }
+  }
+
+  async hide(){
+    const model = await this.model;
+    if (model){
+      model.visible = false;
+    }
   }
 }

@@ -40,8 +40,10 @@ export default function Home(props: HomeProps) {
       minCameraY = 5;
       maxCameraY = 8;
       targetCameraY = 8;
+      bigMap.show();
     } else {
       building.enter();
+      bigMap.hide();
       setInBuilding(true);
       minCameraY = 0.3;
       maxCameraY = 1.1;
@@ -56,7 +58,7 @@ export default function Home(props: HomeProps) {
   createEffect(() => {
     // scene
     var scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+    scene.background = new THREE.Color(0x4f4e4b);
 
     // camera
     var camera = new THREE.PerspectiveCamera(
@@ -116,13 +118,6 @@ export default function Home(props: HomeProps) {
       RIGHT: null
     };
     controls.enableRotate = false;
-
-    // ground
-    const planeGeo = new THREE.PlaneGeometry(1000, 1000);
-    const planeMat = new THREE.MeshBasicMaterial({ color: 0x95ff7a });
-    const plane = new THREE.Mesh(planeGeo, planeMat);
-    plane.rotateX(-Math.PI / 2);
-    scene.add(plane);
 
     // load big map
     bigMap.load(scene);

@@ -25,9 +25,9 @@ const EventList: Component<{ room: Room, class: string }> = ({ room, class: clas
           <p class="text-l font-open-sans italic">{event.startTime} to {event.endTime}</p>
         </button>
       )) : (
-        curEvents() === undefined ? <p class="text-2xl font-open-sans font-bold text-white">Loading...</p> : (
-        curEvents() === null ? <p class="text-2xl font-open-sans font-bold text-white">Failed to fetch events</p> : (
-        <p class="text-2xl font-open-sans font-bold text-white">No events found</p>
+        curEvents() === undefined ? <p class="text-2xl font-open-sans font-bold text-white text-center">Loading...</p> : (
+        curEvents() === null ? <p class="text-2xl font-open-sans font-bold text-white text-center">Failed to fetch events</p> : (
+        <p class="text-2xl font-open-sans font-bold text-white text-center">No events found</p>
         )))
       }
     </div>

@@ -19,9 +19,9 @@ export default function Home(props: HomeProps) {
   // animation stuff
   var minCameraY = 5;
   var maxCameraY = 8;
-  // var targetCameraX = -0.17;
+  const targetCameraX = -0.17;
   var targetCameraY = null;
-  // var targetCameraZ = 0.17;
+  const targetCameraZ = 0.17;
   var inAnimation = false;
   const ANIMATION_SPEED = 0.15;
   const FLOOR_HEIGHT = 0.08;
@@ -86,8 +86,8 @@ export default function Home(props: HomeProps) {
       0.1,
       1000
     );
-    camera.position.y = 5;
     camY = 5;
+    camera.position.y = camY;
     camera.rotation.x = -90;
 
     // mouse clicking
@@ -134,7 +134,7 @@ export default function Home(props: HomeProps) {
       MIDDLE: THREE.MOUSE.DOLLY,
       RIGHT: null,
     };
-    controls.enableRotation = false;
+    controls.enableRotate = false;
 
     // load big map
     bigMap.load(scene);
@@ -177,6 +177,8 @@ export default function Home(props: HomeProps) {
     var interval = 1000 / fps;
     var delta;
 
+    controls.update();
+    
     var animate = function () {
       requestAnimationFrame(animate);
       now = Date.now();
@@ -186,13 +188,18 @@ export default function Home(props: HomeProps) {
         // animation stuff
         if (inAnimation){
           let pos = camera.position;
-          pos.y = pos.y+(targetCameraY-pos.y)*ANIMATION_SPEED;
+          let dy = (targetCameraY-pos.y)*ANIMATION_SPEED;
+          let dx = (targetCameraX-pos.x)*ANIMATION_SPEED;
+          let dz = (targetCameraZ-pos.z)*ANIMATION_SPEED;
+          pos.add(new THREE.Vector3(dx, dy, dz));
+          controls.target.add(new THREE.Vector3(dx, 0, dz));
           if (Math.abs(pos.y-targetCameraY) < 0.01) inAnimation = false;
         } else {
           if (camera.position.y < minCameraY) camera.position.y = minCameraY;
           if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
         }
-        camY = camera.position.y;
+        controls.update();
+
 
         // update time stuffs
 

@@ -7,6 +7,7 @@ import { BigMap } from "./map/BigMap";
 
 import upArrow from "../assets/arrow_upward.svg";
 import downArrow from "../assets/arrow_down.svg";
+//import EventList from "./events/EventList";
 
 import locations from "../assets/locations.js";
 
@@ -29,8 +30,6 @@ export default function Home(props: HomeProps) {
   const FLOOR_HEIGHT = 0.08;
   var camY = 0;
 
-  var renderer = null;
-
   var building = new Building("McNeil", "MC", 1, [
     "/model/floor1.glb",
     "/model/floor2.glb",
@@ -44,9 +43,10 @@ export default function Home(props: HomeProps) {
     if (inBuilding()) {
       // building.leave();
       setInBuilding(false);
-      minCameraY = 5;
-      maxCameraY = 8;
-      targetCameraY = 8;
+      setCurrentRoom(undefined);
+      minCameraY = 6;
+      maxCameraY = 10;
+      targetCameraY = 10;
       bigMap.show();
     } else {
       building.enter();
@@ -81,7 +81,7 @@ export default function Home(props: HomeProps) {
   createEffect(() => {
     // scene
     var scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x007324);
+    scene.background = new THREE.Color(0xA3CE79);
 
     // camera
     var camera = new THREE.PerspectiveCamera(
@@ -110,18 +110,26 @@ export default function Home(props: HomeProps) {
         raycaster.setFromCamera(mouse, camera); // assuming you have a camera object
 
         let intersects = raycaster.intersectObjects(scene.children, true); // assuming you have a scene object
-
         for (let i = 0; i < intersects.length; i++) {
+          // check for labels
           if (intersects[i].object instanceof THREE.Sprite) {
+            setCurrentRoom(undefined)
             setCurrentRoom(intersects[i].object.room)
           }
+          // check for building
+          if (!inBuilding()) {
+            if (intersects[i].object.name == "map_(1)osm_buildings008_1" || intersects[i].object.name == "map_(1)osm_buildings008_2") {
+              toggleBuilding();
+            }
+          }
         }
+
       }
       setup = true;
     }
 
     // renderer
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    var renderer = new THREE.WebGLRenderer({ antialias: true });
     if (props.inheritSize) {
       renderer.setSize(mapContainer.clientWidth, mapContainer.clientHeight);
     } else {
@@ -142,6 +150,7 @@ export default function Home(props: HomeProps) {
 
     // load big map
     bigMap.load(scene);
+    console.log(bigMap)
 
     // load building
     building.load(scene);
@@ -161,16 +170,10 @@ export default function Home(props: HomeProps) {
     lights[3].position.set(0, 12, 25);
 
     for (const light of lights) {
-      // light.castShadow = true; // default false
-      // light.shadow.mapSize.width = 1024; // default
-      // light.shadow.mapSize.height = 1024; // default
-      // light.shadow.camera.near = 0.5; // default
-      // light.shadow.camera.far = 500; // default
-      // light.shadow.camera.top = 1;
-      // light.shadow.camera.bottom = -1;
-      // light.shadow.camera.left = -1;
-      // light.shadow.camera.right = 1;
-      // light.shadow.camera.visible = true;
+      light.castShadow = true;
+      // Set shadow map size
+      light.shadow.mapSize.width = 1024;
+      light.shadow.mapSize.height = 1024;
       scene.add(light);
     }
 
@@ -191,10 +194,9 @@ export default function Home(props: HomeProps) {
     var renderer360Open = false;
 
     controls.update();
-    //console.log(camera.position);
-    //console.log(controls.target)
 
     var animate = function () {
+      requestAnimationFrame(animate);
       now = Date.now();
       delta = now - then;
 
@@ -207,8 +209,9 @@ export default function Home(props: HomeProps) {
             let dx = (targetCameraX - pos.x) * ANIMATION_SPEED;
             let dz = (targetCameraZ - pos.z) * ANIMATION_SPEED;
             pos.add(new THREE.Vector3(dx, dy, dz));
+            camY = pos.y;
             controls.target.set(pos.x, 0, pos.z);
-            if (Math.abs(pos.y - targetCameraY) < 0.01) inAnimation = false;
+            if (Math.abs(pos.y - targetCameraY) < 0.001) inAnimation = false;
           } else {
             if (camera.position.y < minCameraY) camera.position.y = minCameraY;
             if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
@@ -284,7 +287,6 @@ export default function Home(props: HomeProps) {
           camera.position.z = cameraOffscreen360Z;
         }
 
-
         // update time stuffs
 
         // Just `then = now` is not enough.
@@ -301,26 +303,25 @@ export default function Home(props: HomeProps) {
         // ... Code for Drawing the Frame ...
         renderer.render(scene, camera);
       }
-
-      requestAnimationFrame(animate);
     }
     animate();
   }, []);
 
   return (
-    <div><div class="h-full w-full" ref={mapContainer} />
+    <div>
+      <div class="h-full w-full" ref={mapContainer} />
       <div class="absolute top-0 left-0">
         <div class="bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-col transition-all ease-in-out gap-4 duration-500">
           <div class="flex flex-row transition-all ease-in-out duration-500">
             <div class="w-full col-span-1">
               <button
                 onClick={toggleBuilding}
-                class={`w-full rounded-2xl w-8 h-8 mb-4 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${inBuilding() ? "text-black bg-gray-400" : "bg-gray-300"
+                class={`w-full rounded-2xl w-8 h-8 p-8 flex justify-center items-center transition-all ease-in-out duration-500 content-box ${inBuilding() ? "text-black bg-gray-400" : "bg-gray-300"
                   }`}
               >
                 <p class="text-xl font-open-sans font-bold">McNeil Hall</p>
               </button>
-              <button
+              {/*               <button
                 onClick={toggleBuilding}
                 class="bg-gray-300 w-full rounded-2xl w-8 h-8 mb-4 p-8 flex justify-center items-center"
               >
@@ -331,7 +332,7 @@ export default function Home(props: HomeProps) {
                 class="bg-gray-300 w-full rounded-2xl w-8 h-8 p-8 flex justify-center items-center"
               >
                 <p class="text-xl text-black font-open-sans font-bold">CTLM</p>
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -383,12 +384,29 @@ export default function Home(props: HomeProps) {
                 <button
                   class={`bg-gray-300 w-full rounded-full col-span-1 h-12 p-4 flex justify-center items-center 
                 ${currentRoom() !== undefined && currentRoom().name === room.name ? "bg-gray-400" : "bg-gray-300"}`}
-                  onClick={() => setCurrentRoom(room)}
+                  onClick={() => {
+                    if (currentRoom() === room) {
+                      setCurrentRoom(undefined);
+                    } else {
+                      setCurrentRoom(undefined);
+                      setCurrentRoom(room);
+                    }
+                  }}
                 >
                   <p class="text-xl text-black font-open-sans font-bold">{room.name}</p>
                 </button>
               ))}
             </div> : null}
+        </div>
+        <div class={`bg-gray-500 rounded-3xl p-6 m-4 w-96 flex flex-col transition-all ease-in-out gap-4 duration-500 ${currentRoom() !== undefined ? "translate-y-0 opacity-full" : "translate-y-60 opacity-0"}`}>
+          <div
+            class={`flex flex-row items-center w-full justify-around bg-grey-300 transition-all ease-in-out duration-500}}`}
+          >
+            <p class="text-black text-4xl font-open-sans text-white font-bold">
+              Events
+            </p>
+          </div>
+          {currentRoom() !== null && currentRoom() !== undefined ? <EventList class="" room={currentRoom()} /> : null}
         </div>
       </div>
     </div>

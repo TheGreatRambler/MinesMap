@@ -24,6 +24,8 @@ export default function Home(props: HomeProps) {
   // var targetCameraZ = 0.17;
   var inAnimation = false;
   const ANIMATION_SPEED = 0.15;
+  const FLOOR_HEIGHT = 0.08;
+  var camY = 0;
 
   var building = new Building("McNeil", "MC", 1, [
     "/model/floor1.glb",
@@ -45,13 +47,29 @@ export default function Home(props: HomeProps) {
     } else {
       building.enter();
       bigMap.hide();
+      setCurrFloor(building.defaultFloor);
       setInBuilding(true);
-      minCameraY = 0.3;
-      maxCameraY = 1.1;
-      targetCameraY = 1.1;
+      minCameraY = 0.3 + FLOOR_HEIGHT*currFloor();
+      maxCameraY = 1.1 + FLOOR_HEIGHT*currFloor();
+      targetCameraY = maxCameraY;
     }
     inAnimation = true;
   };
+
+  const shiftCamera = (isDown) => {
+    if (inBuilding()){
+      if (isDown){
+        minCameraY -= FLOOR_HEIGHT;
+        maxCameraY -= FLOOR_HEIGHT;
+        targetCameraY = camY - FLOOR_HEIGHT;
+      } else {
+        minCameraY += FLOOR_HEIGHT;
+        maxCameraY += FLOOR_HEIGHT;
+        targetCameraY = camY + FLOOR_HEIGHT;
+      }
+      inAnimation = true;
+    }
+  }
 
   let setup = false;
 
@@ -69,6 +87,7 @@ export default function Home(props: HomeProps) {
       1000
     );
     camera.position.y = 5;
+    camY = 5;
     camera.rotation.x = -90;
 
     // mouse clicking
@@ -154,13 +173,13 @@ export default function Home(props: HomeProps) {
       if (delta > interval) {
         // animation stuff
         if (inAnimation){
-          let pos = camera.position;
-          pos.y = pos.y+(targetCameraY-pos.y)*ANIMATION_SPEED;
-          if (Math.abs(pos.y-targetCameraY) < 0.01) inAnimation = false;
+          camera.position.y = camera.position.y+(targetCameraY-camera.position.y)*ANIMATION_SPEED;
+          if (Math.abs(camera.position.y-targetCameraY) < 0.01) inAnimation = false;
         } else {
           if (camera.position.y < minCameraY) camera.position.y = minCameraY;
           if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
         }
+        camY = camera.position.y;
 
         // update time stuffs
 
@@ -223,6 +242,7 @@ export default function Home(props: HomeProps) {
                         if (floor + 1 >= building.floors.length) return floor;
                         setCurrentRoom(undefined);
                         building.up();
+                        shiftCamera(false);
                         return floor + 1;
                       })
                     : null
@@ -242,6 +262,7 @@ export default function Home(props: HomeProps) {
                         if (!inBuilding()) return floor;
                         setCurrentRoom(undefined);
                         building.down();
+                        shiftCamera(true);
                         return floor - 1;
                       })
                     : null

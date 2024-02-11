@@ -77,7 +77,7 @@ export default function Home(props: HomeProps) {
   createEffect(() => {
     // scene
     var scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x4f4e4b);
+    scene.background = new THREE.Color(0x007324);
 
     // camera
     var camera = new THREE.PerspectiveCamera(
@@ -144,19 +144,31 @@ export default function Home(props: HomeProps) {
     setCurrFloor(building.currFloor);
 
     // Create a light source and enable it to cast shadows
-    var light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(0, 0.5, -1);
-    light.castShadow = true; // default false
-    light.shadow.mapSize.width = 1024; // default
-    light.shadow.mapSize.height = 1024; // default
-    light.shadow.camera.near = 0.5; // default
-    light.shadow.camera.far = 500; // default
-    light.shadow.camera.top = 1;
-    light.shadow.camera.bottom = -1;
-    light.shadow.camera.left = -1;
-    light.shadow.camera.right = 1;
-    light.shadow.camera.visible = true;
-    scene.add(light);
+    const lights = [
+      new THREE.DirectionalLight(0xffffff, 1),
+      new THREE.DirectionalLight(0xffffff, 1),
+      new THREE.DirectionalLight(0xffffff, 1),
+      new THREE.DirectionalLight(0xffffff, 1)
+    ];
+
+    lights[0].position.set(0, 12, 0);
+    lights[1].position.set(25, 12, 0);
+    lights[2].position.set(-25, 12, 0);
+    lights[3].position.set(0, 12, 25);
+
+    for (const light of lights) {
+      // light.castShadow = true; // default false
+      // light.shadow.mapSize.width = 1024; // default
+      // light.shadow.mapSize.height = 1024; // default
+      // light.shadow.camera.near = 0.5; // default
+      // light.shadow.camera.far = 500; // default
+      // light.shadow.camera.top = 1;
+      // light.shadow.camera.bottom = -1;
+      // light.shadow.camera.left = -1;
+      // light.shadow.camera.right = 1;
+      // light.shadow.camera.visible = true;
+      scene.add(light);
+    }
 
     // animate();
     var fps = 30;
@@ -173,8 +185,9 @@ export default function Home(props: HomeProps) {
       if (delta > interval) {
         // animation stuff
         if (inAnimation){
-          camera.position.y = camera.position.y+(targetCameraY-camera.position.y)*ANIMATION_SPEED;
-          if (Math.abs(camera.position.y-targetCameraY) < 0.01) inAnimation = false;
+          let pos = camera.position;
+          pos.y = pos.y+(targetCameraY-pos.y)*ANIMATION_SPEED;
+          if (Math.abs(pos.y-targetCameraY) < 0.01) inAnimation = false;
         } else {
           if (camera.position.y < minCameraY) camera.position.y = minCameraY;
           if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
@@ -197,9 +210,10 @@ export default function Home(props: HomeProps) {
         // ... Code for Drawing the Frame ...
         renderer.render(scene, camera);
       }
-    };
+    }
     animate();
   }, []);
+
   return (
     <div>
       <div class="h-full w-full" ref={mapContainer} />

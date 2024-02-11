@@ -108,11 +108,7 @@ export default function Home(props: HomeProps) {
       MIDDLE: THREE.MOUSE.DOLLY,
       RIGHT: null,
     };
-<<<<<<< HEAD
-    controls.enableRotate = false;
-=======
     controls.enableRotation = false;
->>>>>>> b21ea7a (Actual room lists)
 
     // ground
     const planeGeo = new THREE.PlaneGeometry(1000, 1000);

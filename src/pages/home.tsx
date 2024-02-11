@@ -157,21 +157,10 @@ export default function Home(props: HomeProps) {
           let pos = camera.position;
           pos.y = pos.y+(targetCameraY-pos.y)*ANIMATION_SPEED;
           if (Math.abs(pos.y-targetCameraY) < 0.01) inAnimation = false;
-        if (inAnimation) {
-          camera.position.y +=
-            (targetCameraY - camera.position.y) * ANIMATION_SPEED;
-          camera.position.x +=
-            (targetCameraX - camera.position.x) * ANIMATION_SPEED;
-          camera.position.z +=
-            (targetCameraZ - camera.position.z) * ANIMATION_SPEED;
-          if (Math.abs(camera.position.y - targetCameraY) < 0.01)
-            inAnimation = false;
         } else {
           if (camera.position.y < minCameraY) camera.position.y = minCameraY;
           if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
         }
-        
-        camera.rotation.set(-Math.PI / 2 + Math.PI / 30, 0, 0); // <-- bugs happen without this :(
 
         // update time stuffs
 

@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 import { Building } from "./map/Building";
+import { BigMap } from "./map/BigMap";
 
 import upArrow from "../assets/arrow_upward.svg";
 import downArrow from "../assets/arrow_down.svg";
@@ -17,9 +18,9 @@ export default function Home(props: HomeProps) {
   // animation stuff
   var minCameraY = 5;
   var maxCameraY = 8;
-  var targetCameraX = -0.17;
+  // var targetCameraX = -0.17;
   var targetCameraY = null;
-  var targetCameraZ = 0.17;
+  // var targetCameraZ = 0.17;
   var inAnimation = false;
   const ANIMATION_SPEED = 0.15;
 
@@ -27,6 +28,9 @@ export default function Home(props: HomeProps) {
     "/model/floor1.glb",
     "/model/floor2.glb",
   ]);
+
+  var bigMap = new BigMap("/model/fullmap.glb");
+
   const [currFloor, setCurrFloor] = createSignal(building.currFloor);
 
   const toggleBuilding = () => {
@@ -64,6 +68,7 @@ export default function Home(props: HomeProps) {
     camera.position.y = 5;
     camera.rotation.x = -90;
 
+    // mouse clicking
     let raycaster = new THREE.Raycaster();
     let mouse = new THREE.Vector2();
 
@@ -119,6 +124,9 @@ export default function Home(props: HomeProps) {
     plane.rotateX(-Math.PI / 2);
     scene.add(plane);
 
+    // load big map
+    bigMap.load(scene);
+
     // load building
     building.load(scene);
     setCurrFloor(building.currFloor);
@@ -173,7 +181,7 @@ export default function Home(props: HomeProps) {
         // 16.7fps. Therefore we subtract delta by interval
         // to keep the delay constant overtime and so 1sec = 10 frames
         then = now - (delta % interval);
-
+        
         // ... Code for Drawing the Frame ...
         renderer.render(scene, camera);
       }

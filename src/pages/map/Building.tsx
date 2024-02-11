@@ -24,13 +24,15 @@ export class Building {
     for (let i = 0; i < this.floors.length; i++){
       this.floors[i].load(gltfloader, scene);
     }
-    
+    // Hard-code the second floor, we would want to change this
+    // in a real product.
     this.showFloor(1);
     return this;
   }
 
   up() {
     if (this.currFloor + 1 >= this.floors.length){
+      // Can't go any more up
       return this;
     }
     this.showFloor(this.currFloor + 1);
@@ -39,6 +41,7 @@ export class Building {
 
   down() {
     if (this.currFloor - 1 < 0){
+      // Can't go any more down
       return this;
     }
     this.showFloor(this.currFloor - 1);
@@ -49,10 +52,10 @@ export class Building {
     this.currFloor = newFloor;
     for (let i = 0; i < this.floors.length; i++){
       if (i <= newFloor){
-        // console.log("showing floor " + i);
         this.floors[i].show();
       } else {
-        // console.log("hiding floor " + i);
+        // Hide floors above the current floor
+        // so we can see the current floor interior
         this.floors[i].hide();
       }
     }

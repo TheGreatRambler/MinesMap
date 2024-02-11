@@ -4,8 +4,9 @@ import { Component, createEffect, createSignal } from 'solid-js';
 
 const EventList: Component<{ room: Room, class: string }> = ({ room, class: className }) => {
   const [curEvents, setEvents] = createSignal<RoomEvent[]>(undefined);
-  console.log(room);
   createEffect(() => {
+    // This magic combination makes it actually synchronize the fetch state.
+    // Fixed by Github copilot.
     fetchEventsForRoom(room).then((events) => {
       setEvents(() => {
         if (events == null) {

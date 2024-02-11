@@ -4,6 +4,11 @@ import { Room } from './Room';
 export class Floor {
   building: Building
   modelPath: string;
+  // Want to use a Promise here so that we can load the model
+  // while not crashing when we initialize the state. Ideally
+  // this would be better served by decoupling the model from
+  // the floor. 
+  // Promise refactor done by GitHub copilot
   model: Promise<any>;
   rooms: Room[]
 
@@ -19,14 +24,17 @@ export class Floor {
     return this.model = new Promise((resolve, reject) => {
       gltfloader.load(this.modelPath, function(glb) {
         let object = glb.scene;
-        object.castShadow = true; //default is false
-        object.receiveShadow = true; //default is false
+        // Advised by github copilot to make smoother shadows
+        object.castShadow = true;
+        object.receiveShadow = true;
         object.position.x = 0.5;
         object.position.z = -1;
         scene.add(object);
         thisReference.model = object;
         for (const child of glb.scene.children) {
-          // Ignore children whose name entirely consists of numbers
+          // Only want children whose names are entirely numbers
+          // parseInt will still parse strings like 123mesh, so
+          // we also need to filter those too.
           if (child.name.endsWith('mesh')) {
             continue;
           }

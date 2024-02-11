@@ -27,6 +27,7 @@ export class Room {
       const context = canvas.getContext('2d');
       
       // Draw a fully rounded pill shape in the background
+      // This was generated w/github copilot
       context.beginPath();
       context.moveTo(0, 32);
       context.lineTo(0, 32);
@@ -41,21 +42,19 @@ export class Room {
       context.fillStyle = 'black';
       context.fill();
 
-
+      // Github copilot assisted with this
+      // Draw white text on front of the background
       context.font = '40px Arial';
-      // // Black background, white text
       context.fillStyle = 'white';
-      // // All room names are 3 digits, extend numbers as such.
+      // Center the text vertically and horizontally, while
+      // clamping it to the padded width of the canvas.
       context.fillText(this.name, 8, 45, 112);
 
-      // Create a texture from the canvas
-      const texture = new CanvasTexture(canvas);
-
-      // Create a material with the texture
-      const spriteMaterial = new SpriteMaterial({ map: texture });
-
-      // Create a sprite with the material
+      // Convert canvas to sprite
+      const canvasTexture = new CanvasTexture(canvas);
+      const spriteMaterial = new SpriteMaterial({ map: canvasTexture });
       const sprite = new Sprite(spriteMaterial);
+
       // Default size is too big for a label, scale it down
       sprite.scale.set(0.125 / 2, 0.125 / 4, 1);
       sprite.position.set(this.x, this.y, this.z);
@@ -64,10 +63,9 @@ export class Room {
       sprite.position.x += 0.5;
       sprite.position.z -= 1;
 
+      // We will need the room later when we check for clicks
       sprite.room = this;
-
       this.sprite = sprite;
-
       scene.add(sprite)
   }
 

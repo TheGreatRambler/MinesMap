@@ -13,8 +13,9 @@ export class BigMap {
     const gltfloader = new GLTFLoader();
     return this.model = new Promise((resolve, reject) => {
       gltfloader.load(this.modelPath, function(glb) {
-        glb.scene.castShadow = true; //default is false
-        glb.scene.receiveShadow = true; //default is false
+        // Advised by github copilot to make smoother shadows
+        glb.scene.castShadow = true;
+        glb.scene.receiveShadow = true;
         glb.scene.scale.set(0.27,0.27,0.27);
         glb.scene.rotation.y = 2.5;
         glb.scene.position.x = 7.34;

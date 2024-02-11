@@ -18,8 +18,11 @@ export default function Home(props: HomeProps) {
   // animation stuff
   var minCameraY = 5;
   var maxCameraY = 8;
-  var targetCameraY = 8;
-  const ANIMATION_SPEED = 0.3;
+  var targetCameraX = -0.17;
+  var targetCameraY = null;
+  var targetCameraZ = 0.17;
+  var inAnimation = false;
+  const ANIMATION_SPEED = 0.15;
 
   var building = new Building("McNeil", "MC", 1, [
     '/model/floor1.glb',
@@ -33,13 +36,15 @@ export default function Home(props: HomeProps) {
       setInBuilding(false);
       minCameraY = 5;
       maxCameraY = 8;
+      targetCameraY = 7;
     } else {
       building.enter();
       setInBuilding(true);
       minCameraY = 0.5;
-      maxCameraY = 1.2;
+      maxCameraY = 2;
+      targetCameraY = 1.9;
     }
-    targetCameraY = maxCameraY;
+    inAnimation = true;
   }
 
   let setup = false;
@@ -99,7 +104,7 @@ export default function Home(props: HomeProps) {
     }
     controls.maxDistance = 1.5;
     controls.minDistance = 0.75;
-    camera.zoom = controls.maxDistance;
+    controls.enableRotation = false;
     
     // axis guide
     const axesHelper = new THREE.AxesHelper( 5 );
@@ -145,21 +150,21 @@ export default function Home(props: HomeProps) {
           // 16.7fps. Therefore we subtract delta by interval
           // to keep the delay constant overtime and so 1sec = 10 frames
           then = now - (delta % interval);
-  
+
           // animation stuff
-          if (targetCameraY){
-            if (camera.position.y < targetCameraY){
-              camera.position.y = Math.min(camera.position.y+ANIMATION_SPEED, targetCameraY);
-            } else if (camera.position.y > targetCameraY){
-              camera.position.y = Math.max(camera.position.y-ANIMATION_SPEED, targetCameraY);
-            }
-            if (Math.abs(camera.position.y - targetCameraY) < 0.01) targetCameraY = null;
+          if (inAnimation){
+            camera.position.y += (targetCameraY-camera.position.y)*ANIMATION_SPEED;
+            camera.position.x += (targetCameraX-camera.position.x)*ANIMATION_SPEED;
+            camera.position.z += (targetCameraZ-camera.position.z)*ANIMATION_SPEED;
+            if (Math.abs(camera.position.y-targetCameraY) < 0.01) inAnimation = false;
+          } else {
+            if (camera.position.y < minCameraY) camera.position.y = minCameraY;
+            if (camera.position.y > maxCameraY) camera.position.y = maxCameraY;
           }
-          controls.maxDistance = maxCameraY;
-          controls.minDistance = minCameraY;
-          
+          console.log(camera.rotation)
+          // console.log(camera.rotation);
+
           // ... Code for Drawing the Frame ...
-          // console.log(camera.position);
           renderer.render(scene, camera);
       }
     };
